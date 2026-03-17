@@ -1,0 +1,279 @@
+# Accessibility Audit Platform — MVP Scope
+
+## Purpose
+
+This document defines the scope of the **Minimum Viable Product (MVP)** for the Accessibility Audit Platform backend.
+
+The MVP exists to validate:
+
+- the backend architecture
+- the Playwright + axe-core audit engine
+- the API design
+- the execution flow of accessibility scans
+
+The MVP will be validated **before the OutSystems frontend is implemented**.
+
+---
+
+# MVP Objective
+
+The MVP backend must allow a developer to:
+
+1. Configure an application to audit
+2. Register pages (screens) to scan
+3. Create a report configuration
+4. Trigger an accessibility scan
+5. Execute axe-core using Playwright
+6. Retrieve normalized accessibility findings through the API
+
+The MVP proves that the **audit engine and system architecture work end-to-end**.
+
+---
+
+# In Scope (MVP Features)
+
+The MVP backend must support the following capabilities.
+
+## Project Management
+
+The system allows creating logical project containers.
+
+Supported actions:
+
+- create project
+- list projects
+
+Purpose:
+Organize applications under a project.
+
+---
+
+## Application Configuration
+
+An application represents a web system being audited.
+
+Supported actions:
+
+- create application
+- associate application to a project
+- configure accessibility target level
+- configure device type (desktop / mobile)
+- configure viewport size
+
+---
+
+## Screen Registration
+
+A screen represents a URL that can be audited.
+
+Supported actions:
+
+- register screen
+- associate screen to an application
+- store URL and screen name
+
+---
+
+## Report Configuration
+
+A report defines a set of screens that will be audited together.
+
+Supported actions:
+
+- create report
+- associate report to an application
+- select screens to include in the report
+
+---
+
+## Report Execution
+
+The system must allow triggering a report run.
+
+Supported actions:
+
+- trigger report run
+- execute scans sequentially
+- track run lifecycle
+
+Lifecycle states:
+
+- pending
+- running
+- completed
+- failed
+
+---
+
+## Accessibility Scan Execution
+
+The backend must perform automated accessibility scans using:
+
+- Playwright (browser automation)
+- axe-core (accessibility engine)
+
+Each screen in the report must be scanned.
+
+---
+
+## Findings Processing
+
+The system must:
+
+- collect axe-core violations
+- normalize findings
+- associate findings with the screen and report run
+
+---
+
+## Findings Retrieval
+
+The backend must expose endpoints to retrieve:
+
+- report run status
+- findings for a report run
+
+---
+
+## API Documentation
+
+The backend API must include:
+
+- OpenAPI specification
+- Swagger UI
+
+This allows manual exploration of the API before the frontend exists.
+
+---
+
+## Backend Validation Tools
+
+The MVP must include tools for validating the backend:
+
+### Swagger UI
+Interactive API exploration.
+
+### Postman Collection
+Manual validation of full workflows.
+
+### Playwright API Tests
+Automated validation of API endpoints.
+
+---
+
+# Out of Scope (Not Included in MVP)
+
+The following features are **explicitly excluded** from the MVP.
+
+They may be implemented in future phases.
+
+## Advanced Reporting
+
+Not included:
+
+- dashboards
+- charts
+- trend analysis
+- historical comparisons
+
+---
+
+## Issue Management
+
+Not included:
+
+- assigning issues
+- marking issues as resolved
+- issue lifecycle management
+
+---
+
+## Export Features
+
+Not included:
+
+- PDF export
+- CSV export
+- Excel export
+
+---
+
+## Automated Crawling
+
+Not included:
+
+- automatic discovery of pages
+- site-wide crawling
+
+Screens must be manually registered.
+
+---
+
+## Scheduling
+
+Not included:
+
+- scheduled scans
+- cron-based audits
+
+All report runs must be triggered manually.
+
+---
+
+## Parallel Scan Execution
+
+Not included:
+
+- worker pools
+- queue-based job execution
+
+Scans may run sequentially in the MVP.
+
+The architecture will allow scaling later.
+
+---
+
+## Full Frontend Interface
+
+The OutSystems frontend is **not required for the MVP**.
+
+Backend validation will be performed using:
+
+- Swagger UI
+- Postman
+- automated tests
+
+---
+
+# Definition of Done (MVP Backend)
+
+The MVP backend is considered complete when the following workflow works end-to-end.
+
+1.	Create project
+2.	Create application
+3.	Register screens
+4.	Create report
+5.	Trigger report run
+6.	Playwright loads each screen
+7.	axe-core performs scan
+8.	Findings are collected
+9.	API returns normalized results
+
+Additionally:
+
+- API documentation is available via Swagger
+- Postman collection validates the full flow
+- Automated API tests run successfully
+
+---
+
+# MVP Validation Goal
+
+The MVP proves that the system can reliably perform accessibility audits using Playwright and axe-core through a structured backend API.
+
+Once validated, development can proceed to:
+
+- OutSystems frontend
+- background workers
+- advanced reporting features
+- scalability improvements
