@@ -142,6 +142,7 @@ This includes:
 - Screens
 - Reports
 - ReportRuns
+- Guidelines
 - Findings
 - summarized metrics for reporting
 
@@ -157,10 +158,13 @@ Project
          ├── Screen
          │
          └── Report
+               ├── selects Screens
                │
                └── ReportRun
                      │
                      └── Finding
+                           ├── references Screen
+                           └── references Guideline
 ```
 ## Entity Summary
 
@@ -181,7 +185,11 @@ Stores configuration such as:
 Represents a named page or URL that can be audited.
 
 ### Report
-Represents a reusable scan definition for a set of screens.
+Represents a reusable scan definition for an application.
+
+A report is a configuration object. It selects one or more screens and can be executed multiple times.
+
+The screen selection is modeled as a many-to-many relationship, even if the join is not exposed as a first-class API resource.
 
 ### ReportRun
 Represents one execution of a report.
@@ -192,8 +200,13 @@ Tracks lifecycle state such as:
 - completed
 - failed
 
+### Guideline
+Represents an accessibility rule or success criterion referenced by findings.
+
 ### Finding
 Represents a normalized accessibility issue produced by axe-core.
+
+Each finding belongs to a report run and references both the originating screen and the related guideline.
 
 ## Report Execution Flow
 
@@ -222,6 +235,7 @@ Core resources:
 - Screens
 - Reports
 - ReportRuns
+- Guidelines
 - Findings
 
 Example endpoint groups:
