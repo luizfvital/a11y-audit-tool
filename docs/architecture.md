@@ -114,8 +114,6 @@ The audit engine combines two technologies:
 - Playwright
 - axe-core
 
-Playwright
-
 Playwright is responsible for:
 - browser automation
 - page navigation
@@ -123,14 +121,12 @@ Playwright is responsible for:
 - DOM interaction
 - viewport simulation
 
-axe-core
-
 axe-core is responsible for:
 - accessibility analysis
 - identifying rule violations
 - producing machine-readable findings
 
-5. Data Storage Strategy
+1. Data Storage Strategy
 
 During the first validation phase, the backend may return findings directly through the API.
 
