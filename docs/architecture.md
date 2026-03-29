@@ -225,34 +225,163 @@ Each finding belongs to a report run and references both the originating screen 
 
 The backend follows a resource-oriented API structure.
 
-Core resources:
-- Projects
-- Applications
-- Screens
-- Reports
-- ReportRuns
-- Guidelines
-- Findings
+Main MVP resource groups:
+- `Projects`
+- `Applications`
+- `Screens`
+- `Reports`
+- `ReportRuns`
+- `Findings`
 
-Example endpoint groups:
+Supporting reference resource:
+- `Guidelines`
+
+### Resource Responsibilities
+
+#### Projects
+Top-level business container.
+
+Responsibility:
+- organize audited work by customer initiative
+- own applications
+
+#### Applications
+Audit target and runtime configuration boundary.
+
+Responsibility:
+- belong to one project
+- store audit execution defaults such as device, viewport, wait time, and accessibility target
+- own screens and reports
+
+#### Screens
+Auditable URLs inside one application.
+
+Responsibility:
+- store screen name and URL
+- act as selectable audit targets for reports
+
+#### Reports
+Reusable audit definitions.
+
+Responsibility:
+- belong to one application
+- define which screens are selected for execution
+- optionally store authentication configuration
+- act as the parent resource from which report runs are created
+
+The `ReportScreen` relationship exists in the domain model, but it does not need to be exposed as a first-class API resource in the MVP. Screen selection can be managed inside the `Report` payload.
+
+#### ReportRuns
+Execution instances of reports.
+
+Responsibility:
+- represent one triggered execution of one report
+- expose lifecycle state and timestamps
+- expose run summary data
+- provide the retrieval boundary for findings
+
+`ReportRuns` are execution resources, not configuration resources.
+
+#### Findings
+Normalized accessibility issues produced by a specific report run.
+
+Responsibility:
+- expose normalized scan results
+- link each issue to its run, screen, and guideline
+- remain read-only in the MVP
+
+Findings should not be created or updated directly by API clients. They are produced only through report execution.
+
+#### Guidelines
+Reference data used to classify findings.
+
+Responsibility:
+- provide stable rule metadata for findings
+- support read-only lookup and enrichment
+
+### Naming Rules
+
+To keep the API predictable, the MVP should use these conventions consistently:
+- plural resource names in URLs
+- kebab-case path segments
+- avoid mixing domain names and shorthand aliases such as `/runs`
+- use `report-runs` in URLs to match the domain term `ReportRun`
+- use nested routes when the parent-child relationship is part of the resource identity
+
+Examples:
+- `/projects/{projectId}/applications`
+- `/applications/{applicationId}/screens`
+- `/applications/{applicationId}/reports`
+- `/reports/{reportId}/report-runs`
+- `/report-runs/{reportRunId}/findings`
+
+### Recommended MVP Endpoint Groups
 
 ```text
+Projects
 POST /projects
 GET /projects
+GET /projects/{projectId}
+PATCH /projects/{projectId}
 
-POST /applications
-GET /applications
+Applications
+POST /projects/{projectId}/applications
+GET /projects/{projectId}/applications
+GET /applications/{applicationId}
+PATCH /applications/{applicationId}
 
-POST /screens
-GET /screens
+Screens
+POST /applications/{applicationId}/screens
+GET /applications/{applicationId}/screens
+GET /screens/{screenId}
+PATCH /screens/{screenId}
 
-POST /reports
-GET /reports
+Reports
+POST /applications/{applicationId}/reports
+GET /applications/{applicationId}/reports
+GET /reports/{reportId}
+PATCH /reports/{reportId}
 
-POST /reports/{id}/run
-GET /runs/{id}
-GET /runs/{id}/findings
+ReportRuns
+POST /reports/{reportId}/report-runs
+GET /reports/{reportId}/report-runs
+GET /report-runs/{reportRunId}
+
+Findings
+GET /report-runs/{reportRunId}/findings
+GET /findings/{findingId}
+
+Guidelines
+GET /guidelines
+GET /guidelines/{guidelineId}
 ```
+
+### Why These Endpoints Support the MVP Flow
+
+The MVP flow is:
+
+`Project -> Application -> Screen -> Report -> ReportRun -> Finding`
+
+This structure supports that flow directly:
+- create a project first
+- create applications under a project
+- register screens under an application
+- create reports under an application with selected screen IDs
+- trigger execution by creating a `ReportRun` under a report
+- retrieve run status through `GET /report-runs/{reportRunId}`
+- retrieve normalized findings through `GET /report-runs/{reportRunId}/findings`
+
+### Endpoint Decisions
+
+`ReportRuns` needs explicit endpoints in the MVP because execution state must be created and queried independently from `Reports`.
+
+`Findings` also needs explicit endpoints in the MVP because retrieving normalized results is one of the core validation goals.
+
+However:
+- `ReportRuns` should be created only from a report context
+- `Findings` should be read-only
+- `ReportScreen` should remain an internal relationship, not a separate MVP resource group
+
 The API contract will be defined using OpenAPI and explored through Swagger UI.
 
 ## Development-Time Architecture
