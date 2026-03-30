@@ -69,7 +69,7 @@ A target application inside a project that can be configured for accessibility a
 - `width`
 - `height`
 - `waitTimeMs`
-- `accessibilityLevel`
+- `accessibilityTarget`
 - `createdAt`
 - `updatedAt`
 
@@ -80,7 +80,7 @@ A target application inside a project that can be configured for accessibility a
 
 ### Notes
 Based on the mockups, an application includes runtime and audit configuration such as:
-- targeted accessibility level
+- targeted accessibility standard/version/levels
 - device type
 - viewport width
 - viewport height
@@ -88,7 +88,9 @@ Based on the mockups, an application includes runtime and audit configuration su
 
 Possible MVP values:
 - `device`: desktop, tablet, phone
-- `accessibilityLevel`: WCAG A, WCAG AA, Section 508
+- `accessibilityTarget.standard`: WCAG
+- `accessibilityTarget.version`: 2.0, 2.1, 2.2
+- `accessibilityTarget.levels`: A, AA, AAA
 
 These exact enums can be finalized during API contract design.
 
@@ -226,7 +228,7 @@ The mockups show a guidelines area with at least:
 - rule ID / code (for example `1.1.1`)
 - name
 - level (A, AA, AAA)
-- different standards/tabs such as WCAG and Section 508
+- different guideline groupings or versions within WCAG
 
 Possible examples:
 - `code`: `1.1.1`

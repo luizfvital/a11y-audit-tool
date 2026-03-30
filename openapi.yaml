@@ -31,6 +31,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectListResponse'
+              examples:
+                projectList:
+                  $ref: '#/components/examples/ProjectListResponse'
     post:
       tags: [Projects]
       operationId: createProject
@@ -41,6 +44,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ProjectCreateRequest'
+            examples:
+              happyPath:
+                $ref: '#/components/examples/ProjectCreateRequest'
       responses:
         '201':
           description: Project created successfully
@@ -48,6 +54,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectResponse'
+              examples:
+                createdProject:
+                  $ref: '#/components/examples/ProjectResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
         '500':
@@ -66,6 +75,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectResponse'
+              examples:
+                project:
+                  $ref: '#/components/examples/ProjectResponse'
         '404':
           $ref: '#/components/responses/NotFound'
     patch:
@@ -78,6 +90,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ProjectUpdateRequest'
+            examples:
+              renameProject:
+                $ref: '#/components/examples/ProjectUpdateRequest'
       responses:
         '200':
           description: Project updated successfully
@@ -85,6 +100,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectResponse'
+              examples:
+                updatedProject:
+                  $ref: '#/components/examples/ProjectUpdatedResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
         '404':
@@ -106,6 +124,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApplicationListResponse'
+              examples:
+                applicationList:
+                  $ref: '#/components/examples/ApplicationListResponse'
         '404':
           $ref: '#/components/responses/NotFound'
     post:
@@ -118,6 +139,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ApplicationCreateRequest'
+            examples:
+              happyPath:
+                $ref: '#/components/examples/ApplicationCreateRequest'
       responses:
         '201':
           description: Application created successfully
@@ -125,6 +149,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApplicationResponse'
+              examples:
+                createdApplication:
+                  $ref: '#/components/examples/ApplicationResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
         '404':
@@ -146,6 +173,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApplicationResponse'
+              examples:
+                application:
+                  $ref: '#/components/examples/ApplicationResponse'
         '404':
           $ref: '#/components/responses/NotFound'
     patch:
@@ -158,6 +188,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ApplicationUpdateRequest'
+            examples:
+              adjustViewport:
+                $ref: '#/components/examples/ApplicationUpdateRequest'
       responses:
         '200':
           description: Application updated successfully
@@ -165,6 +198,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApplicationResponse'
+              examples:
+                updatedApplication:
+                  $ref: '#/components/examples/ApplicationUpdatedResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
         '404':
@@ -186,6 +222,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScreenListResponse'
+              examples:
+                screenList:
+                  $ref: '#/components/examples/ScreenListResponse'
         '404':
           $ref: '#/components/responses/NotFound'
     post:
@@ -198,6 +237,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ScreenCreateRequest'
+            examples:
+              happyPath:
+                $ref: '#/components/examples/ScreenCreateRequest'
       responses:
         '201':
           description: Screen created successfully
@@ -205,6 +247,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScreenResponse'
+              examples:
+                createdScreen:
+                  $ref: '#/components/examples/ScreenResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
         '404':
@@ -226,6 +271,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScreenResponse'
+              examples:
+                screen:
+                  $ref: '#/components/examples/ScreenResponse'
         '404':
           $ref: '#/components/responses/NotFound'
     patch:
@@ -238,6 +286,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ScreenUpdateRequest'
+            examples:
+              renameScreen:
+                $ref: '#/components/examples/ScreenUpdateRequest'
       responses:
         '200':
           description: Screen updated successfully
@@ -245,6 +296,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScreenResponse'
+              examples:
+                updatedScreen:
+                  $ref: '#/components/examples/ScreenUpdatedResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
         '404':
@@ -266,6 +320,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReportListResponse'
+              examples:
+                reportList:
+                  $ref: '#/components/examples/ReportListResponse'
         '404':
           $ref: '#/components/responses/NotFound'
     post:
@@ -278,6 +335,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ReportCreateRequest'
+            examples:
+              happyPath:
+                $ref: '#/components/examples/ReportCreateRequest'
       responses:
         '201':
           description: Report created successfully
@@ -285,6 +345,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReportResponse'
+              examples:
+                createdReport:
+                  $ref: '#/components/examples/ReportResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
         '404':
@@ -306,6 +369,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReportResponse'
+              examples:
+                report:
+                  $ref: '#/components/examples/ReportResponse'
         '404':
           $ref: '#/components/responses/NotFound'
     patch:
@@ -318,6 +384,9 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/ReportUpdateRequest'
+            examples:
+              disableAuthentication:
+                $ref: '#/components/examples/ReportUpdateRequest'
       responses:
         '200':
           description: Report updated successfully
@@ -325,6 +394,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReportResponse'
+              examples:
+                updatedReport:
+                  $ref: '#/components/examples/ReportUpdatedResponse'
         '400':
           $ref: '#/components/responses/ValidationError'
         '404':
@@ -346,6 +418,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReportRunListResponse'
+              examples:
+                runList:
+                  $ref: '#/components/examples/ReportRunListResponse'
         '404':
           $ref: '#/components/responses/NotFound'
     post:
@@ -360,6 +435,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReportRunResponse'
+              examples:
+                createdRun:
+                  $ref: '#/components/examples/ReportRunPendingResponse'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -372,6 +450,7 @@ paths:
       tags: [ReportRuns]
       operationId: getReportRun
       summary: Get a report run by ID
+      description: Retrieves the current execution status and summary metadata for a single report run.
       responses:
         '200':
           description: Report run retrieved successfully
@@ -379,6 +458,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReportRunResponse'
+              examples:
+                completedRun:
+                  $ref: '#/components/examples/ReportRunCompletedResponse'
+                failedRun:
+                  $ref: '#/components/examples/ReportRunFailedResponse'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -396,6 +480,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FindingListResponse'
+              examples:
+                findingList:
+                  $ref: '#/components/examples/FindingListResponse'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -413,6 +500,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FindingResponse'
+              examples:
+                finding:
+                  $ref: '#/components/examples/FindingResponse'
         '404':
           $ref: '#/components/responses/NotFound'
 
@@ -428,6 +518,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GuidelineListResponse'
+              examples:
+                guidelineList:
+                  $ref: '#/components/examples/GuidelineListResponse'
 
   /guidelines/{guidelineId}:
     parameters:
@@ -443,6 +536,9 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/GuidelineResponse'
+              examples:
+                guideline:
+                  $ref: '#/components/examples/GuidelineResponse'
         '404':
           $ref: '#/components/responses/NotFound'
 components:
@@ -525,6 +621,296 @@ components:
             executionFailure:
               $ref: '#/components/examples/InternalServerError'
   examples:
+    ProjectCreateRequest:
+      summary: Create project request
+      value:
+        name: Ecommerce Accessibility Baseline
+        customerName: Acme Retail
+    ProjectUpdateRequest:
+      summary: Update project request
+      value:
+        name: Ecommerce Accessibility Baseline - Q2
+    ProjectResponse:
+      summary: Project response
+      value:
+        data:
+          id: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
+          name: Ecommerce Accessibility Baseline
+          customerName: Acme Retail
+          createdAt: '2026-03-30T10:00:00Z'
+          updatedAt: '2026-03-30T10:00:00Z'
+    ProjectUpdatedResponse:
+      summary: Updated project response
+      value:
+        data:
+          id: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
+          name: Ecommerce Accessibility Baseline - Q2
+          customerName: Acme Retail
+          createdAt: '2026-03-30T10:00:00Z'
+          updatedAt: '2026-03-31T09:15:00Z'
+    ProjectListResponse:
+      summary: Project list response
+      value:
+        data:
+          - id: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
+            name: Ecommerce Accessibility Baseline
+            customerName: Acme Retail
+            createdAt: '2026-03-30T10:00:00Z'
+            updatedAt: '2026-03-30T10:00:00Z'
+          - id: 6fe32831-c8d9-4bcf-9f17-e2c94c17a836
+            name: Marketing Site Audit
+            customerName: Northwind Health
+            createdAt: '2026-03-29T15:45:00Z'
+            updatedAt: '2026-03-29T15:45:00Z'
+    ApplicationCreateRequest:
+      summary: Create application request
+      value:
+        name: Web Storefront
+        device: desktop
+        width: 1440
+        height: 900
+        waitTimeMs: 1500
+        accessibilityTarget:
+          standard: WCAG
+          version: '2.2'
+          levels:
+            - A
+            - AA
+    ApplicationUpdateRequest:
+      summary: Update application request
+      value:
+        width: 1280
+        height: 800
+        waitTimeMs: 2000
+    ApplicationResponse:
+      summary: Application response
+      value:
+        data:
+          id: 48d52f4f-37da-4786-8b79-172d4f2d358b
+          projectId: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
+          name: Web Storefront
+          device: desktop
+          width: 1440
+          height: 900
+          waitTimeMs: 1500
+          accessibilityTarget:
+            standard: WCAG
+            version: '2.2'
+            levels:
+              - A
+              - AA
+          createdAt: '2026-03-30T10:05:00Z'
+          updatedAt: '2026-03-30T10:05:00Z'
+    ApplicationUpdatedResponse:
+      summary: Updated application response
+      value:
+        data:
+          id: 48d52f4f-37da-4786-8b79-172d4f2d358b
+          projectId: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
+          name: Web Storefront
+          device: desktop
+          width: 1280
+          height: 800
+          waitTimeMs: 2000
+          accessibilityTarget:
+            standard: WCAG
+            version: '2.2'
+            levels:
+              - A
+              - AA
+          createdAt: '2026-03-30T10:05:00Z'
+          updatedAt: '2026-03-31T09:20:00Z'
+    ApplicationListResponse:
+      summary: Application list response
+      value:
+        data:
+          - id: 48d52f4f-37da-4786-8b79-172d4f2d358b
+            projectId: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
+            name: Web Storefront
+            device: desktop
+            width: 1440
+            height: 900
+            waitTimeMs: 1500
+            accessibilityTarget:
+              standard: WCAG
+              version: '2.2'
+              levels:
+                - A
+                - AA
+            createdAt: '2026-03-30T10:05:00Z'
+            updatedAt: '2026-03-30T10:05:00Z'
+          - id: a66dc5f7-c5c2-4583-8f90-b02696d7f540
+            projectId: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
+            name: Mobile Checkout
+            device: phone
+            width: 390
+            height: 844
+            waitTimeMs: 2000
+            accessibilityTarget:
+              standard: WCAG
+              version: '2.1'
+              levels:
+                - A
+                - AA
+            createdAt: '2026-03-30T10:06:00Z'
+            updatedAt: '2026-03-30T10:06:00Z'
+    ScreenCreateRequest:
+      summary: Create screen request
+      value:
+        name: Checkout
+        url: https://store.acme.test/checkout
+    ScreenUpdateRequest:
+      summary: Update screen request
+      value:
+        name: Checkout Step 1
+    ScreenResponse:
+      summary: Screen response
+      value:
+        data:
+          id: 8246317d-6758-4f6a-9957-695ed30a9e13
+          applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
+          name: Checkout
+          url: https://store.acme.test/checkout
+          createdAt: '2026-03-30T10:10:00Z'
+          updatedAt: '2026-03-30T10:10:00Z'
+    ScreenUpdatedResponse:
+      summary: Updated screen response
+      value:
+        data:
+          id: 8246317d-6758-4f6a-9957-695ed30a9e13
+          applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
+          name: Checkout Step 1
+          url: https://store.acme.test/checkout
+          createdAt: '2026-03-30T10:10:00Z'
+          updatedAt: '2026-03-31T09:25:00Z'
+    ScreenListResponse:
+      summary: Screen list response
+      value:
+        data:
+          - id: ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+            applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
+            name: Home
+            url: https://store.acme.test/
+            createdAt: '2026-03-30T10:08:00Z'
+            updatedAt: '2026-03-30T10:08:00Z'
+          - id: 8246317d-6758-4f6a-9957-695ed30a9e13
+            applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
+            name: Checkout
+            url: https://store.acme.test/checkout
+            createdAt: '2026-03-30T10:10:00Z'
+            updatedAt: '2026-03-30T10:10:00Z'
+    ReportCreateRequest:
+      summary: Create report request
+      value:
+        name: Critical Purchase Flow
+        authenticationEnabled: true
+        authentication:
+          loginUrl: https://store.acme.test/login
+          username: audit-user@example.com
+          password: secret-password
+        selectedScreenIds:
+          - ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+          - 8246317d-6758-4f6a-9957-695ed30a9e13
+    ReportUpdateRequest:
+      summary: Update report request
+      value:
+        authenticationEnabled: false
+    ReportResponse:
+      summary: Report response
+      value:
+        data:
+          id: aea96d2c-c784-4bff-bdb6-e69cd28f3233
+          applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
+          name: Critical Purchase Flow
+          authenticationEnabled: true
+          authentication:
+            loginUrl: https://store.acme.test/login
+            username: audit-user@example.com
+          selectedScreenIds:
+            - ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+            - 8246317d-6758-4f6a-9957-695ed30a9e13
+          createdAt: '2026-03-30T10:20:00Z'
+          updatedAt: '2026-03-30T10:20:00Z'
+    ReportUpdatedResponse:
+      summary: Updated report response
+      value:
+        data:
+          id: aea96d2c-c784-4bff-bdb6-e69cd28f3233
+          applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
+          name: Critical Purchase Flow
+          authenticationEnabled: false
+          selectedScreenIds:
+            - ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+            - 8246317d-6758-4f6a-9957-695ed30a9e13
+          createdAt: '2026-03-30T10:20:00Z'
+          updatedAt: '2026-03-31T09:30:00Z'
+    ReportListResponse:
+      summary: Report list response
+      value:
+        data:
+          - id: aea96d2c-c784-4bff-bdb6-e69cd28f3233
+            applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
+            name: Critical Purchase Flow
+            authenticationEnabled: true
+            authentication:
+              loginUrl: https://store.acme.test/login
+              username: audit-user@example.com
+            selectedScreenIds:
+              - ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+              - 8246317d-6758-4f6a-9957-695ed30a9e13
+            createdAt: '2026-03-30T10:20:00Z'
+            updatedAt: '2026-03-30T10:20:00Z'
+    ReportRunPendingResponse:
+      summary: Pending report run creation response
+      value:
+        data:
+          id: d1390d8a-9a07-4b17-a272-dc2e4d06453a
+          reportId: aea96d2c-c784-4bff-bdb6-e69cd28f3233
+          status: pending
+          startedAt: null
+          finishedAt: null
+          errorMessage: null
+          summary:
+            totalFindings: 0
+            screensScanned: 0
+            screensPlanned: 2
+            findingsByImpact: {}
+          createdAt: '2026-03-30T10:30:00Z'
+          updatedAt: '2026-03-30T10:30:00Z'
+    ReportRunListResponse:
+      summary: Report run list response
+      value:
+        data:
+          - id: d1390d8a-9a07-4b17-a272-dc2e4d06453a
+            reportId: aea96d2c-c784-4bff-bdb6-e69cd28f3233
+            status: pending
+            startedAt: null
+            finishedAt: null
+            errorMessage: null
+            summary:
+              totalFindings: 0
+              screensScanned: 0
+              screensPlanned: 2
+              findingsByImpact: {}
+            createdAt: '2026-03-30T10:30:00Z'
+            updatedAt: '2026-03-30T10:30:00Z'
+          - id: 0f11a4f6-f26f-471c-a59d-4b3ef6f6a3b2
+            reportId: aea96d2c-c784-4bff-bdb6-e69cd28f3233
+            status: completed
+            startedAt: '2026-03-29T14:00:05Z'
+            finishedAt: '2026-03-29T14:02:18Z'
+            errorMessage: null
+            summary:
+              totalFindings: 14
+              screensScanned: 2
+              screensPlanned: 2
+              findingsByImpact:
+                minor: 3
+                moderate: 5
+                serious: 4
+                critical: 2
+            createdAt: '2026-03-29T14:00:00Z'
+            updatedAt: '2026-03-29T14:02:18Z'
     ValidationError:
       summary: Validation error response
       value:
@@ -551,6 +937,115 @@ components:
           type: execution_error
           code: audit_engine_unavailable
           message: The audit engine is temporarily unavailable. Retry later.
+    ReportRunCompletedResponse:
+      summary: Completed report run status response
+      value:
+        data:
+          id: 0f11a4f6-f26f-471c-a59d-4b3ef6f6a3b2
+          reportId: aea96d2c-c784-4bff-bdb6-e69cd28f3233
+          status: completed
+          startedAt: '2026-03-30T14:00:05Z'
+          finishedAt: '2026-03-30T14:02:18Z'
+          errorMessage: null
+          summary:
+            totalFindings: 14
+            screensScanned: 2
+            screensPlanned: 2
+            findingsByImpact:
+              minor: 3
+              moderate: 5
+              serious: 4
+              critical: 2
+          createdAt: '2026-03-30T14:00:00Z'
+          updatedAt: '2026-03-30T14:02:18Z'
+    ReportRunFailedResponse:
+      summary: Failed report run status response
+      value:
+        data:
+          id: 68cc7ed8-6d94-4204-ae45-59773d82f7e5
+          reportId: aea96d2c-c784-4bff-bdb6-e69cd28f3233
+          status: failed
+          startedAt: '2026-03-30T14:00:05Z'
+          finishedAt: '2026-03-30T14:01:11Z'
+          errorMessage: Browser navigation timed out while loading the checkout screen.
+          summary:
+            totalFindings: 4
+            screensScanned: 1
+            screensPlanned: 2
+            findingsByImpact:
+              minor: 1
+              moderate: 2
+              serious: 1
+              critical: 0
+          createdAt: '2026-03-30T14:00:00Z'
+          updatedAt: '2026-03-30T14:01:11Z'
+    FindingResponse:
+      summary: Finding response
+      value:
+        data:
+          id: c2a9f3f3-06bd-4180-95a7-fb565fbaf23f
+          reportRunId: 0f11a4f6-f26f-471c-a59d-4b3ef6f6a3b2
+          screenId: 8246317d-6758-4f6a-9957-695ed30a9e13
+          guidelineId: 117f8567-0957-4d0d-99f5-c5a8b771b1bd
+          ruleCode: color-contrast
+          message: Elements must meet minimum color contrast ratio thresholds.
+          selector: .checkout-total
+          htmlSnippet: <div class="checkout-total">$124.99</div>
+          impact: serious
+          createdAt: '2026-03-30T14:02:00Z'
+    FindingListResponse:
+      summary: Finding list response
+      value:
+        data:
+          - id: c2a9f3f3-06bd-4180-95a7-fb565fbaf23f
+            reportRunId: 0f11a4f6-f26f-471c-a59d-4b3ef6f6a3b2
+            screenId: 8246317d-6758-4f6a-9957-695ed30a9e13
+            guidelineId: 117f8567-0957-4d0d-99f5-c5a8b771b1bd
+            ruleCode: color-contrast
+            message: Elements must meet minimum color contrast ratio thresholds.
+            selector: .checkout-total
+            htmlSnippet: <div class="checkout-total">$124.99</div>
+            impact: serious
+            createdAt: '2026-03-30T14:02:00Z'
+          - id: 2f777682-2067-4da7-8165-75fa8280e793
+            reportRunId: 0f11a4f6-f26f-471c-a59d-4b3ef6f6a3b2
+            screenId: ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+            guidelineId: b3b68fec-8f48-4cf0-a06f-f98ad06a7060
+            ruleCode: image-alt
+            message: Images must have alternative text.
+            selector: img.hero-banner
+            htmlSnippet: <img class="hero-banner" src="/hero.png">
+            impact: moderate
+            createdAt: '2026-03-30T14:01:10Z'
+    GuidelineResponse:
+      summary: Guideline response
+      value:
+        data:
+          id: 117f8567-0957-4d0d-99f5-c5a8b771b1bd
+          code: 1.4.3
+          name: Contrast (Minimum)
+          level: AA
+          standard: WCAG 2.1
+          createdAt: '2026-03-01T09:00:00Z'
+          updatedAt: '2026-03-01T09:00:00Z'
+    GuidelineListResponse:
+      summary: Guideline list response
+      value:
+        data:
+          - id: 117f8567-0957-4d0d-99f5-c5a8b771b1bd
+            code: 1.4.3
+            name: Contrast (Minimum)
+            level: AA
+            standard: WCAG 2.1
+            createdAt: '2026-03-01T09:00:00Z'
+            updatedAt: '2026-03-01T09:00:00Z'
+          - id: b3b68fec-8f48-4cf0-a06f-f98ad06a7060
+            code: 1.1.1
+            name: Non-text Content
+            level: A
+            standard: WCAG 2.1
+            createdAt: '2026-03-01T09:00:00Z'
+            updatedAt: '2026-03-01T09:00:00Z'
   schemas:
     ErrorKind:
       type: string
@@ -697,7 +1192,7 @@ components:
         - width
         - height
         - waitTimeMs
-        - accessibilityLevel
+        - accessibilityTarget
         - createdAt
         - updatedAt
       properties:
@@ -720,8 +1215,8 @@ components:
         waitTimeMs:
           type: integer
           minimum: 0
-        accessibilityLevel:
-          $ref: '#/components/schemas/AccessibilityLevel'
+        accessibilityTarget:
+          $ref: '#/components/schemas/AccessibilityTarget'
         createdAt:
           type: string
           format: date-time
@@ -736,7 +1231,7 @@ components:
         - width
         - height
         - waitTimeMs
-        - accessibilityLevel
+        - accessibilityTarget
       properties:
         name:
           type: string
@@ -751,8 +1246,8 @@ components:
         waitTimeMs:
           type: integer
           minimum: 0
-        accessibilityLevel:
-          $ref: '#/components/schemas/AccessibilityLevel'
+        accessibilityTarget:
+          $ref: '#/components/schemas/AccessibilityTarget'
     ApplicationUpdateRequest:
       type: object
       minProperties: 1
@@ -770,8 +1265,8 @@ components:
         waitTimeMs:
           type: integer
           minimum: 0
-        accessibilityLevel:
-          $ref: '#/components/schemas/AccessibilityLevel'
+        accessibilityTarget:
+          $ref: '#/components/schemas/AccessibilityTarget'
     ApplicationResponse:
       type: object
       required: [data]
@@ -936,6 +1431,7 @@ components:
 
     ReportRun:
       type: object
+      description: Execution status resource for a single run of a report.
       required:
         - id
         - reportId
@@ -955,13 +1451,16 @@ components:
           type: string
           format: date-time
           nullable: true
+          description: Timestamp when backend execution actually started.
         finishedAt:
           type: string
           format: date-time
           nullable: true
+          description: Timestamp when the run reached a terminal state.
         errorMessage:
           type: string
           nullable: true
+          description: High-level failure reason when the run ends in `failed`.
         summary:
           $ref: '#/components/schemas/ReportRunSummary'
         createdAt:
@@ -972,13 +1471,26 @@ components:
           format: date-time
     ReportRunSummary:
       type: object
+      description: Summary metadata associated with the current run state.
       properties:
         totalFindings:
           type: integer
           minimum: 0
+          description: Number of findings persisted for this run so far.
         screensScanned:
           type: integer
           minimum: 0
+          description: Number of screens processed so far.
+        screensPlanned:
+          type: integer
+          minimum: 0
+          description: Total number of screens selected for the run.
+        findingsByImpact:
+          type: object
+          description: Breakdown of findings by normalized impact level.
+          additionalProperties:
+            type: integer
+            minimum: 0
     ReportRunResponse:
       type: object
       required: [data]
@@ -1108,12 +1620,39 @@ components:
         - desktop
         - tablet
         - phone
-    AccessibilityLevel:
+    AccessibilityStandard:
       type: string
       enum:
-        - WCAG_A
-        - WCAG_AA
-        - SECTION_508
+        - WCAG
+    WcagVersion:
+      type: string
+      enum:
+        - '2.0'
+        - '2.1'
+        - '2.2'
+    WcagLevel:
+      type: string
+      enum:
+        - A
+        - AA
+        - AAA
+    AccessibilityTarget:
+      type: object
+      required:
+        - standard
+        - version
+        - levels
+      properties:
+        standard:
+          $ref: '#/components/schemas/AccessibilityStandard'
+        version:
+          $ref: '#/components/schemas/WcagVersion'
+        levels:
+          type: array
+          minItems: 1
+          uniqueItems: true
+          items:
+            $ref: '#/components/schemas/WcagLevel'
     ReportRunStatus:
       type: string
       enum:
