@@ -48,6 +48,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /projects/{projectId}:
     parameters:
       - $ref: '#/components/parameters/ProjectId'
@@ -81,8 +85,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ProjectResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /projects/{projectId}/applications:
     parameters:
@@ -117,8 +125,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApplicationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /applications/{applicationId}:
     parameters:
@@ -153,8 +165,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApplicationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /applications/{applicationId}/screens:
     parameters:
@@ -189,8 +205,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScreenResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /screens/{screenId}:
     parameters:
@@ -225,8 +245,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ScreenResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /applications/{applicationId}/reports:
     parameters:
@@ -261,8 +285,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReportResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /reports/{reportId}:
     parameters:
@@ -297,8 +325,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ReportResponse'
+        '400':
+          $ref: '#/components/responses/ValidationError'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /reports/{reportId}/report-runs:
     parameters:
@@ -330,6 +362,8 @@ paths:
                 $ref: '#/components/schemas/ReportRunResponse'
         '404':
           $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 
   /report-runs/{reportRunId}:
     parameters:
@@ -468,14 +502,136 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/ExecutionErrorResponse'
+          examples:
+            resourceNotFound:
+              $ref: '#/components/examples/ResourceNotFoundError'
     ValidationError:
       description: Request validation failed
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: '#/components/schemas/ValidationErrorResponse'
+          examples:
+            invalidRequest:
+              $ref: '#/components/examples/ValidationError'
+    InternalServerError:
+      description: Request failed due to an execution error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ExecutionErrorResponse'
+          examples:
+            executionFailure:
+              $ref: '#/components/examples/InternalServerError'
+  examples:
+    ValidationError:
+      summary: Validation error response
+      value:
+        error:
+          type: validation_error
+          code: invalid_request
+          message: One or more request fields are invalid.
+          details:
+            - field: name
+              issue: must not be empty
+            - field: targetUrl
+              issue: must be a valid URI
+    ResourceNotFoundError:
+      summary: Not found execution error response
+      value:
+        error:
+          type: execution_error
+          code: resource_not_found
+          message: Report run 9f2ddf18-a5da-4dde-a5d3-9a1e1bc247ad was not found.
+    InternalServerError:
+      summary: Internal execution error response
+      value:
+        error:
+          type: execution_error
+          code: audit_engine_unavailable
+          message: The audit engine is temporarily unavailable. Retry later.
   schemas:
+    ErrorKind:
+      type: string
+      description: Distinguishes validation failures from execution/runtime failures.
+      enum:
+        - validation_error
+        - execution_error
+    ErrorEnvelope:
+      type: object
+      description: Standard error envelope returned by the API for any non-success response.
+      required:
+        - error
+      properties:
+        error:
+          $ref: '#/components/schemas/BaseError'
+    BaseError:
+      type: object
+      required:
+        - type
+        - code
+        - message
+      properties:
+        type:
+          $ref: '#/components/schemas/ErrorKind'
+        code:
+          type: string
+          description: Stable machine-readable error code for client-side branching.
+        message:
+          type: string
+          description: Human-readable explanation suitable for logs or UI surfaces.
+    ValidationErrorDetail:
+      type: object
+      required:
+        - field
+        - issue
+      properties:
+        field:
+          type: string
+          description: Request field or path that failed validation.
+        issue:
+          type: string
+          description: Validation rule that was violated.
+    ValidationError:
+      allOf:
+        - $ref: '#/components/schemas/BaseError'
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - validation_error
+            details:
+              type: array
+              description: Field-level validation issues for the request payload or parameters.
+              items:
+                $ref: '#/components/schemas/ValidationErrorDetail'
+          required:
+            - details
+    ExecutionError:
+      allOf:
+        - $ref: '#/components/schemas/BaseError'
+        - type: object
+          properties:
+            type:
+              type: string
+              enum:
+                - execution_error
+    ValidationErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/ErrorEnvelope'
+        - type: object
+          properties:
+            error:
+              $ref: '#/components/schemas/ValidationError'
+    ExecutionErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/ErrorEnvelope'
+        - type: object
+          properties:
+            error:
+              $ref: '#/components/schemas/ExecutionError'
     Project:
       type: object
       required:
@@ -973,18 +1129,3 @@ components:
         - serious
         - critical
       nullable: true
-    ErrorResponse:
-      type: object
-      required:
-        - error
-      properties:
-        error:
-          type: object
-          required:
-            - code
-            - message
-          properties:
-            code:
-              type: string
-            message:
-              type: string
