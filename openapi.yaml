@@ -1,0 +1,990 @@
+openapi: 3.0.3
+info:
+  title: Accessibility Audit Platform API
+  version: 0.1.0
+  description: >
+    Initial MVP API contract for the Accessibility Audit Platform.
+    This specification defines the resource structure, core request and response
+    schemas, and the main endpoints needed to configure audits, trigger report
+    runs, and retrieve normalized accessibility findings.
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+tags:
+  - name: Projects
+  - name: Applications
+  - name: Screens
+  - name: Reports
+  - name: ReportRuns
+  - name: Findings
+  - name: Guidelines
+paths:
+  /projects:
+    get:
+      tags: [Projects]
+      operationId: listProjects
+      summary: List projects
+      responses:
+        '200':
+          description: Projects retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectListResponse'
+    post:
+      tags: [Projects]
+      operationId: createProject
+      summary: Create a project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectCreateRequest'
+      responses:
+        '201':
+          description: Project created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+  /projects/{projectId}:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+    get:
+      tags: [Projects]
+      operationId: getProject
+      summary: Get a project by ID
+      responses:
+        '200':
+          description: Project retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Projects]
+      operationId: updateProject
+      summary: Update a project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectUpdateRequest'
+      responses:
+        '200':
+          description: Project updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /projects/{projectId}/applications:
+    parameters:
+      - $ref: '#/components/parameters/ProjectId'
+    get:
+      tags: [Applications]
+      operationId: listApplicationsByProject
+      summary: List applications for a project
+      responses:
+        '200':
+          description: Applications retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [Applications]
+      operationId: createApplication
+      summary: Create an application inside a project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationCreateRequest'
+      responses:
+        '201':
+          description: Application created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /applications/{applicationId}:
+    parameters:
+      - $ref: '#/components/parameters/ApplicationId'
+    get:
+      tags: [Applications]
+      operationId: getApplication
+      summary: Get an application by ID
+      responses:
+        '200':
+          description: Application retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Applications]
+      operationId: updateApplication
+      summary: Update an application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationUpdateRequest'
+      responses:
+        '200':
+          description: Application updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApplicationResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /applications/{applicationId}/screens:
+    parameters:
+      - $ref: '#/components/parameters/ApplicationId'
+    get:
+      tags: [Screens]
+      operationId: listScreensByApplication
+      summary: List screens for an application
+      responses:
+        '200':
+          description: Screens retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScreenListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [Screens]
+      operationId: createScreen
+      summary: Create a screen inside an application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScreenCreateRequest'
+      responses:
+        '201':
+          description: Screen created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScreenResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /screens/{screenId}:
+    parameters:
+      - $ref: '#/components/parameters/ScreenId'
+    get:
+      tags: [Screens]
+      operationId: getScreen
+      summary: Get a screen by ID
+      responses:
+        '200':
+          description: Screen retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScreenResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Screens]
+      operationId: updateScreen
+      summary: Update a screen
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScreenUpdateRequest'
+      responses:
+        '200':
+          description: Screen updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScreenResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /applications/{applicationId}/reports:
+    parameters:
+      - $ref: '#/components/parameters/ApplicationId'
+    get:
+      tags: [Reports]
+      operationId: listReportsByApplication
+      summary: List reports for an application
+      responses:
+        '200':
+          description: Reports retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [Reports]
+      operationId: createReport
+      summary: Create a report inside an application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportCreateRequest'
+      responses:
+        '201':
+          description: Report created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /reports/{reportId}:
+    parameters:
+      - $ref: '#/components/parameters/ReportId'
+    get:
+      tags: [Reports]
+      operationId: getReport
+      summary: Get a report by ID
+      responses:
+        '200':
+          description: Report retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags: [Reports]
+      operationId: updateReport
+      summary: Update a report
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportUpdateRequest'
+      responses:
+        '200':
+          description: Report updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /reports/{reportId}/report-runs:
+    parameters:
+      - $ref: '#/components/parameters/ReportId'
+    get:
+      tags: [ReportRuns]
+      operationId: listReportRunsByReport
+      summary: List report runs for a report
+      responses:
+        '200':
+          description: Report runs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportRunListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags: [ReportRuns]
+      operationId: createReportRun
+      summary: Trigger a new report run
+      description: Creates a new execution instance for the specified report.
+      responses:
+        '201':
+          description: Report run created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportRunResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /report-runs/{reportRunId}:
+    parameters:
+      - $ref: '#/components/parameters/ReportRunId'
+    get:
+      tags: [ReportRuns]
+      operationId: getReportRun
+      summary: Get a report run by ID
+      responses:
+        '200':
+          description: Report run retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportRunResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /report-runs/{reportRunId}/findings:
+    parameters:
+      - $ref: '#/components/parameters/ReportRunId'
+    get:
+      tags: [Findings]
+      operationId: listFindingsByReportRun
+      summary: List findings for a report run
+      responses:
+        '200':
+          description: Findings retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindingListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /findings/{findingId}:
+    parameters:
+      - $ref: '#/components/parameters/FindingId'
+    get:
+      tags: [Findings]
+      operationId: getFinding
+      summary: Get a finding by ID
+      responses:
+        '200':
+          description: Finding retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FindingResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /guidelines:
+    get:
+      tags: [Guidelines]
+      operationId: listGuidelines
+      summary: List guidelines
+      responses:
+        '200':
+          description: Guidelines retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuidelineListResponse'
+
+  /guidelines/{guidelineId}:
+    parameters:
+      - $ref: '#/components/parameters/GuidelineId'
+    get:
+      tags: [Guidelines]
+      operationId: getGuideline
+      summary: Get a guideline by ID
+      responses:
+        '200':
+          description: Guideline retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GuidelineResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  parameters:
+    ProjectId:
+      name: projectId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ApplicationId:
+      name: applicationId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ScreenId:
+      name: screenId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ReportId:
+      name: reportId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ReportRunId:
+      name: reportRunId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    FindingId:
+      name: findingId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    GuidelineId:
+      name: guidelineId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ValidationError:
+      description: Request validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    Project:
+      type: object
+      required:
+        - id
+        - name
+        - customerName
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        customerName:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ProjectCreateRequest:
+      type: object
+      required:
+        - name
+        - customerName
+      properties:
+        name:
+          type: string
+        customerName:
+          type: string
+    ProjectUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+        customerName:
+          type: string
+    ProjectResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/Project'
+    ProjectListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+
+    Application:
+      type: object
+      required:
+        - id
+        - projectId
+        - name
+        - device
+        - width
+        - height
+        - waitTimeMs
+        - accessibilityLevel
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        device:
+          $ref: '#/components/schemas/Device'
+        width:
+          type: integer
+          minimum: 1
+        height:
+          type: integer
+          minimum: 1
+        waitTimeMs:
+          type: integer
+          minimum: 0
+        accessibilityLevel:
+          $ref: '#/components/schemas/AccessibilityLevel'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ApplicationCreateRequest:
+      type: object
+      required:
+        - name
+        - device
+        - width
+        - height
+        - waitTimeMs
+        - accessibilityLevel
+      properties:
+        name:
+          type: string
+        device:
+          $ref: '#/components/schemas/Device'
+        width:
+          type: integer
+          minimum: 1
+        height:
+          type: integer
+          minimum: 1
+        waitTimeMs:
+          type: integer
+          minimum: 0
+        accessibilityLevel:
+          $ref: '#/components/schemas/AccessibilityLevel'
+    ApplicationUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+        device:
+          $ref: '#/components/schemas/Device'
+        width:
+          type: integer
+          minimum: 1
+        height:
+          type: integer
+          minimum: 1
+        waitTimeMs:
+          type: integer
+          minimum: 0
+        accessibilityLevel:
+          $ref: '#/components/schemas/AccessibilityLevel'
+    ApplicationResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/Application'
+    ApplicationListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Application'
+
+    Screen:
+      type: object
+      required:
+        - id
+        - applicationId
+        - name
+        - url
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        applicationId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ScreenCreateRequest:
+      type: object
+      required:
+        - name
+        - url
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
+    ScreenUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
+    ScreenResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/Screen'
+    ScreenListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Screen'
+
+    Report:
+      type: object
+      required:
+        - id
+        - applicationId
+        - name
+        - authenticationEnabled
+        - selectedScreenIds
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        applicationId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        authenticationEnabled:
+          type: boolean
+        authentication:
+          $ref: '#/components/schemas/AuthenticationConfig'
+        selectedScreenIds:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ReportCreateRequest:
+      type: object
+      required:
+        - name
+        - authenticationEnabled
+        - selectedScreenIds
+      properties:
+        name:
+          type: string
+        authenticationEnabled:
+          type: boolean
+        authentication:
+          $ref: '#/components/schemas/AuthenticationConfig'
+        selectedScreenIds:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uuid
+    ReportUpdateRequest:
+      type: object
+      minProperties: 1
+      properties:
+        name:
+          type: string
+        authenticationEnabled:
+          type: boolean
+        authentication:
+          $ref: '#/components/schemas/AuthenticationConfig'
+        selectedScreenIds:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            format: uuid
+    ReportResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/Report'
+    ReportListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Report'
+
+    ReportRun:
+      type: object
+      required:
+        - id
+        - reportId
+        - status
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        reportId:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ReportRunStatus'
+        startedAt:
+          type: string
+          format: date-time
+          nullable: true
+        finishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        errorMessage:
+          type: string
+          nullable: true
+        summary:
+          $ref: '#/components/schemas/ReportRunSummary'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ReportRunSummary:
+      type: object
+      properties:
+        totalFindings:
+          type: integer
+          minimum: 0
+        screensScanned:
+          type: integer
+          minimum: 0
+    ReportRunResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/ReportRun'
+    ReportRunListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportRun'
+
+    Finding:
+      type: object
+      required:
+        - id
+        - reportRunId
+        - screenId
+        - guidelineId
+        - ruleCode
+        - message
+        - selector
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        reportRunId:
+          type: string
+          format: uuid
+        screenId:
+          type: string
+          format: uuid
+        guidelineId:
+          type: string
+          format: uuid
+        ruleCode:
+          type: string
+        message:
+          type: string
+        selector:
+          type: string
+        htmlSnippet:
+          type: string
+          nullable: true
+        impact:
+          $ref: '#/components/schemas/FindingImpact'
+        createdAt:
+          type: string
+          format: date-time
+    FindingResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/Finding'
+    FindingListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Finding'
+
+    Guideline:
+      type: object
+      required:
+        - id
+        - code
+        - name
+        - level
+        - standard
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        code:
+          type: string
+        name:
+          type: string
+        level:
+          type: string
+        standard:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    GuidelineResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          $ref: '#/components/schemas/Guideline'
+    GuidelineListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Guideline'
+
+    AuthenticationConfig:
+      type: object
+      properties:
+        loginUrl:
+          type: string
+          format: uri
+        username:
+          type: string
+        password:
+          type: string
+          writeOnly: true
+
+    Device:
+      type: string
+      enum:
+        - desktop
+        - tablet
+        - phone
+    AccessibilityLevel:
+      type: string
+      enum:
+        - WCAG_A
+        - WCAG_AA
+        - SECTION_508
+    ReportRunStatus:
+      type: string
+      enum:
+        - pending
+        - running
+        - completed
+        - failed
+    FindingImpact:
+      type: string
+      enum:
+        - minor
+        - moderate
+        - serious
+        - critical
+      nullable: true
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+            message:
+              type: string
