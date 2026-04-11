@@ -6,21 +6,25 @@ The Accessibility Audit Platform is a backend-first system designed to perform a
 
 The architecture separates:
 
-- API layer
+- API contract
 - audit execution
-- domain logic
-- infrastructure
+- domain normalization
+- persistence and infrastructure
 
-This allows the backend to be validated independently before the frontend, which will later be implemented in OutSystems.
+This allows the backend to be validated independently from any specific client implementation.
+
+For the MVP, the backend is also the system of record for the audit domain.
 
 ## High-Level Architecture
 
 ```text
-OutSystems Frontend (future)
+Client Application or Integration (future)
         │
         │ REST API
         ▼
 Node Backend API
+        │
+        │ create/read/update audit resources
         │
         │ triggers audit jobs
         ▼
@@ -32,20 +36,23 @@ Playwright + axe-core
         │
         │ normalized results
         ▼
-OutSystems-managed data storage / reporting layer
+Persistence / Retrieval Layer
 ```
 ## Main Architectural Decision
 
-The main application will be built in OutSystems, but the audit execution layer will live outside OutSystems.
+The platform is API-first: audit execution, normalization, and result retrieval live in the backend, while any future client consumes the same REST contract.
+
+The backend platform owns both:
+- the audit domain resources such as projects, applications, screens, reports, report runs, findings, and guidelines
+- the audit execution flow that produces normalized results
 
 ## Why
 
-OutSystems is a strong fit for:
-- business workflows
-- relational data
-- report management
-- UI and dashboards
-- internal tooling
+An API-first design is a strong fit for:
+- frontend agnosticism
+- stable integration contracts
+- independent evolution of clients and backend services
+- early validation through Swagger, Postman, and automated tests
 
 Node is a strong fit for:
 - Playwright execution
@@ -54,26 +61,21 @@ Node is a strong fit for:
 - long-running scan jobs
 
 This means the system is intentionally split into:
-- OutSystems as the product application
-- Node as the audit execution backend
+- client applications or integrations as API consumers
+- Node as the audit-domain, execution, and normalization backend
 
 ## System Components
 
-1. OutSystems Frontend (Future)
+1. Client Applications and Integrations (Future)
 
-The frontend application will be implemented in OutSystems.
+Any future frontend or integration can consume the backend through REST APIs.
 
 Responsibilities:
-- manage projects
-- manage applications
-- manage screens
-- create reports
-- trigger report runs
-- view findings
+- provide UI or integration flows to create and edit projects, applications, screens, and reports through the API
+- trigger report runs through the API
+- read findings, summaries, and guideline data through the API
 - filter and explore audit results
 - present future dashboards and history views
-
-The frontend will consume the backend through REST APIs.
 
 2. Node Backend API
 
@@ -82,10 +84,12 @@ The backend API will be implemented in Node.js.
 Responsibilities:
 - expose REST endpoints
 - validate requests
+- create, read, and update audit-domain resources
 - receive report run requests
+- persist domain data
 - orchestrate audit execution
 - return run status
-- return findings
+- return normalized findings and summaries
 - expose Swagger / OpenAPI documentation
 
 The API is the entry point for audit-related operations.
@@ -126,13 +130,11 @@ axe-core is responsible for:
 - identifying rule violations
 - producing machine-readable findings
 
-1. Data Storage Strategy
+5. Data Storage Strategy
 
-During the first validation phase, the backend may return findings directly through the API.
+The backend owns persistence for the audit domain in the MVP.
 
-In the intended architecture, most relational data can remain in OutSystems.
-
-This includes:
+This means the backend, not the client, is the system of record for:
 - Projects
 - Applications
 - Screens
@@ -140,9 +142,16 @@ This includes:
 - ReportRuns
 - Guidelines
 - Findings
-- summarized metrics for reporting
 
-This keeps OutSystems as the main product data layer, while Node remains focused on execution.
+The MVP should store this data in a backend-owned relational database.
+
+PostgreSQL is the recommended persistence technology for the MVP.
+
+The persistence layer exists to support the normalized API contract and the resource model exposed by the platform.
+
+Summarized metrics for reporting may also be stored or derived from this same backend-owned data.
+
+Future persistence changes may be possible, but storage replacement is not an MVP goal. The important MVP requirement is that persistence concerns remain reasonably isolated from API contract and audit execution logic so the implementation can evolve later if needed.
 
 ## Domain Model
 
@@ -396,28 +405,30 @@ Swagger UI / Postman
         │
         ▼
 Dockerized Node Backend
-        │
         ├── API layer
-        └── Audit runner
+        ├── Audit runner
+        └── persistence access
+                │
+                ▼
+PostgreSQL
 ```
-This allows backend validation before the OutSystems frontend exists.
+This allows backend validation before any dedicated client application exists.
 
 ## Future Production-Oriented Architecture
 
 ```text
-OutSystems Frontend
+Client Application or Integration
         │
         ▼
 Node API
-        │
-        ▼
-Job Queue
-        │
-        ▼
-One or More Audit Workers
-        │
-        ▼
-Playwright + axe-core
+   ├── PostgreSQL
+   └── Job Queue
+           │
+           ▼
+   One or More Audit Workers
+           │
+           ▼
+   Playwright + axe-core
 ```
 This evolution allows long-running scans to be separated from normal API traffic.
 
@@ -465,6 +476,7 @@ Containers should include:
 - Node runtime
 - Playwright dependencies
 - browser runtime support
+- PostgreSQL connectivity
 
 ## Testing Strategy
 
@@ -472,7 +484,7 @@ The validation process includes multiple layers.
 
 1. Swagger UI
 
-Used as a temporary interactive frontend for manual API exploration.
+Used as a temporary interactive API client for manual exploration.
 
 2. Postman
 
@@ -515,9 +527,11 @@ These concerns are especially important once authenticated application scanning 
 
 ## Technology Stack
 
-Frontend (future) -> OutSystems
+Client applications (future) -> any REST-capable frontend or integration
 
 Backend API -> Node.js
+
+MVP database -> PostgreSQL
 
 Browser automation -> Playwright
 
@@ -545,4 +559,4 @@ Potential future improvements include:
 
 ## Project Goal
 
-The main goal of this platform is to provide a reliable and scalable way to detect accessibility issues early in the development process.
+The main goal of this platform is to provide normalized accessibility audit results through a stable API, so any client can build workflows, reporting, or remediation experiences on top of the same backend contract.

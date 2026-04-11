@@ -25,7 +25,7 @@ This document covers:
 
 This document does not define:
 
-- frontend behavior
+- client-side behavior
 - API endpoint contracts
 - queueing or worker-topology details
 - advanced retry or scheduling behavior
@@ -179,6 +179,8 @@ The system may use them internally during processing, but the MVP contract shoul
 
 The backend transforms raw audit results into normalized `Finding` records.
 
+This normalization step is the core MVP value: it converts tool-specific scanner output into a stable API response model that any client can consume.
+
 For each relevant issue identified by the scanner, the system extracts and maps data such as:
 
 - rule code
@@ -202,6 +204,8 @@ This keeps findings consistent with the domain model and avoids leaking raw tool
 ### 7. Findings Are Stored
 
 After normalization, the system stores the generated findings for the current run.
+
+In the MVP, these findings are stored by the backend platform in its own database together with the related run, screen, and guideline references.
 
 In MVP terms, successful processing means:
 
@@ -248,7 +252,7 @@ Once the run reaches a terminal state, the backend can expose:
 - run summary information
 - normalized findings for the run
 
-This retrieval behavior is backend-oriented and independent of frontend implementation details.
+This retrieval behavior is backend-oriented and independent of client implementation details.
 
 ## Normalization Rules
 
@@ -260,7 +264,7 @@ The MVP normalization approach should follow these principles:
 - screen association is explicit
 - run association is explicit
 
-The goal is a stable backend data model that remains usable even before any frontend exists.
+The goal is a stable backend data model that remains usable even before any dedicated client exists.
 
 ## Alignment With MVP Scope
 
@@ -282,7 +286,7 @@ Explicitly excluded here:
 - advanced reporting
 - issue-management workflows
 - queue-based scaling strategies
-- frontend-specific interaction design
+- client-specific interaction design
 
 ## Related Documents
 

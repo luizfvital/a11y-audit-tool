@@ -9,9 +9,11 @@ The goal is to establish a stable product model before API design and implementa
 This model is based on:
 - the agreed MVP backend scope
 - the current architecture direction
-- the current frontend mockup flows
+- the current product workflows
 
-The backend must remain understandable and usable even without the frontend being implemented.
+The backend must remain understandable and usable without depending on any specific client implementation.
+
+For the MVP, this domain model is persisted by the backend platform in its own database.
 
 ## Domain Overview
 
@@ -33,6 +35,8 @@ Guideline → Finding
 - A **Finding** represents one normalized accessibility issue detected during a report run.
 - A **Guideline** represents the accessibility rule or success criterion referenced by findings.
 - The backend should expose normalized data structures instead of raw scanner payloads.
+- The public contract should remain stable regardless of whether the consumer is a web frontend, low-code frontend, or another integration.
+- The backend platform owns persistence of these entities for the MVP.
 
 ## Entities
 
@@ -52,7 +56,7 @@ A top-level container representing a customer project.
 - One Project has many Applications
 
 ### Notes
-The mockups show project creation and editing with at least:
+Current product flows require project creation and editing with at least:
 - project name
 - customer name
 
@@ -79,7 +83,7 @@ A target application inside a project that can be configured for accessibility a
 - One Application has many Reports
 
 ### Notes
-Based on the mockups, an application includes runtime and audit configuration such as:
+Current product flows require an application to include runtime and audit configuration such as:
 - targeted accessibility standard/version/levels
 - device type
 - viewport width
@@ -113,7 +117,7 @@ A single auditable page or route inside an application.
 - One Screen can appear in many Findings through ReportRuns
 
 ### Notes
-The mockups show screens being managed from the application settings screen.
+Current product flows manage screens from application-level configuration.
 
 A screen is defined minimally by:
 - a human-readable name
@@ -143,7 +147,7 @@ A report does not represent execution itself. It represents the configuration th
 - One Report has many ReportRuns
 
 ### Notes
-The mockups show report creation with:
+Current product flows require report creation with:
 - report name
 - selected screens
 - optional authentication toggle
@@ -204,7 +208,7 @@ Minimum expected statuses:
 - `completed`
 - `failed`
 
-The mockups also imply that multiple runs can exist over time for the same report, since the UI shows:
+Current product flows imply that multiple runs can exist over time for the same report, since the product will need:
 - last report date
 - historical charts
 - run-based summaries
@@ -227,7 +231,7 @@ A structured accessibility rule or success criterion used to classify findings.
 - One Guideline can be referenced by many Findings
 
 ### Notes
-The mockups show a guidelines area with at least:
+Current product flows require guideline reference data with at least:
 - rule ID / code (for example `1.1.1`)
 - name
 - level (A, AA, AAA)
@@ -265,7 +269,7 @@ A normalized accessibility issue produced by a report run.
 - One Finding references one Guideline
 
 ### Notes
-The mockups indicate that findings may include:
+Current product flows indicate that findings may include:
 - guideline reference
 - message / explanation
 - element snippet

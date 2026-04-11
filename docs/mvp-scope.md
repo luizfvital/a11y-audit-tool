@@ -10,8 +10,9 @@ The MVP exists to validate:
 - the Playwright + axe-core audit engine
 - the API design
 - the execution flow of accessibility scans
+- the normalized results contract exposed by the API
 
-The MVP will be validated **before the OutSystems frontend is implemented**.
+The MVP will be validated as an **API-first, client-agnostic backend**.
 
 ---
 
@@ -26,7 +27,11 @@ The MVP backend must allow a developer to:
 5. Execute axe-core using Playwright
 6. Retrieve normalized accessibility findings through the API
 
-The MVP proves that the **audit engine and system architecture work end-to-end**.
+The MVP proves that the **audit engine, normalization pipeline, and system architecture work end-to-end through the API**.
+
+The main purpose of this MVP is to return normalized accessibility results through a stable backend contract, regardless of which client consumes it.
+
+The backend is also responsible for persisting the audit-domain resources required by that contract.
 
 ---
 
@@ -46,6 +51,8 @@ Supported actions:
 Purpose:
 Organize applications under a project.
 
+These project records must be stored by the backend platform.
+
 ---
 
 ## Application Configuration
@@ -60,6 +67,8 @@ Supported actions:
 - configure device type
 - configure viewport size
 - configure wait time before scanning
+
+Application configuration must be stored by the backend platform.
 
 MVP configuration includes:
 
@@ -80,6 +89,8 @@ Supported actions:
 - associate screen to an application
 - store URL and screen name
 
+Registered screens must be stored by the backend platform.
+
 ---
 
 ## Report Configuration
@@ -92,6 +103,8 @@ Supported actions:
 - associate report to an application
 - select screens to include in the report
 - optionally configure authentication settings
+
+Report definitions must be stored by the backend platform.
 
 MVP report configuration may include:
 
@@ -143,6 +156,8 @@ The system must:
 
 The MVP contract should expose normalized findings instead of raw axe-core payloads.
 
+This normalized response model is the primary deliverable of the MVP.
+
 ---
 
 ## Findings Retrieval
@@ -182,7 +197,7 @@ The backend API must include:
 - OpenAPI specification
 - Swagger UI
 
-This allows manual exploration of the API before the frontend exists.
+This allows manual exploration of the API before any dedicated client exists.
 
 The OpenAPI examples should present one coherent MVP workflow across the resource hierarchy so that Swagger preview reflects a believable end-to-end audit flow.
 
@@ -202,6 +217,16 @@ Manual validation of full workflows.
 
 ### Playwright API Tests
 Automated validation of API endpoints.
+
+---
+
+## Persistence
+
+The MVP must include a backend-owned database for the audit domain.
+
+This database stores the resource model required by the API, including projects, applications, screens, reports, report runs, guidelines, and findings.
+
+PostgreSQL is the recommended database for the MVP.
 
 ---
 
@@ -281,9 +306,9 @@ The architecture will allow scaling later.
 
 ---
 
-## Full Frontend Interface
+## Full Client Interface
 
-The OutSystems frontend is **not required for the MVP**.
+No full client application is **required for the MVP**.
 
 Backend validation will be performed using:
 
@@ -322,7 +347,7 @@ The MVP proves that the system can reliably perform accessibility audits using P
 
 Once validated, development can proceed to:
 
-- OutSystems frontend
+- one or more client applications or integrations
 - background workers
 - advanced reporting features
 - scalability improvements

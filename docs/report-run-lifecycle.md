@@ -11,6 +11,8 @@ The goal is to make execution state changes explicit before implementation begin
 
 This lifecycle applies to the execution of a `Report`, not to report configuration itself.
 
+The lifecycle is part of the API contract and must remain stable regardless of which client consumes run status and normalized results.
+
 ## Scope
 
 This document covers:
@@ -24,7 +26,7 @@ This document does not define:
 - API endpoint contracts
 - retry strategy
 - queueing implementation
-- frontend display behavior
+- client display behavior
 
 ## Core Principle
 
