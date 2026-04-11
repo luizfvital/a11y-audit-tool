@@ -184,6 +184,10 @@ The backend API must include:
 
 This allows manual exploration of the API before the frontend exists.
 
+The OpenAPI examples should present one coherent MVP workflow across the resource hierarchy so that Swagger preview reflects a believable end-to-end audit flow.
+
+Validation and execution error examples should also be operation-specific, so each endpoint demonstrates realistic invalid requests and failure conditions for that resource.
+
 ---
 
 ## Backend Validation Tools

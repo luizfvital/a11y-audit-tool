@@ -32,7 +32,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ProjectListResponse'
               examples:
-                projectList:
+                projects:
                   $ref: '#/components/examples/ProjectListResponse'
     post:
       tags: [Projects]
@@ -45,7 +45,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ProjectCreateRequest'
             examples:
-              happyPath:
+              createProject:
                 $ref: '#/components/examples/ProjectCreateRequest'
       responses:
         '201':
@@ -58,9 +58,23 @@ paths:
                 createdProject:
                   $ref: '#/components/examples/ProjectResponse'
         '400':
-          $ref: '#/components/responses/ValidationError'
+          description: Request validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                invalidProject:
+                  $ref: '#/components/examples/ProjectCreateValidationError'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Request failed due to an execution error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                projectStoreUnavailable:
+                  $ref: '#/components/examples/ProjectPersistenceError'
   /projects/{projectId}:
     parameters:
       - $ref: '#/components/parameters/ProjectId'
@@ -79,7 +93,14 @@ paths:
                 project:
                   $ref: '#/components/examples/ProjectResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                projectNotFound:
+                  $ref: '#/components/examples/ProjectNotFoundError'
     patch:
       tags: [Projects]
       operationId: updateProject
@@ -91,7 +112,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ProjectUpdateRequest'
             examples:
-              renameProject:
+              renameProjectForRelease:
                 $ref: '#/components/examples/ProjectUpdateRequest'
       responses:
         '200':
@@ -104,11 +125,32 @@ paths:
                 updatedProject:
                   $ref: '#/components/examples/ProjectUpdatedResponse'
         '400':
-          $ref: '#/components/responses/ValidationError'
+          description: Request validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                invalidProjectUpdate:
+                  $ref: '#/components/examples/ProjectUpdateValidationError'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                projectNotFound:
+                  $ref: '#/components/examples/ProjectNotFoundError'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Request failed due to an execution error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                projectStoreUnavailable:
+                  $ref: '#/components/examples/ProjectPersistenceError'
 
   /projects/{projectId}/applications:
     parameters:
@@ -117,6 +159,7 @@ paths:
       tags: [Applications]
       operationId: listApplicationsByProject
       summary: List applications for a project
+      description: Returns the audited applications configured under a single customer project.
       responses:
         '200':
           description: Applications retrieved successfully
@@ -125,14 +168,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApplicationListResponse'
               examples:
-                applicationList:
+                applications:
                   $ref: '#/components/examples/ApplicationListResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                projectNotFound:
+                  $ref: '#/components/examples/ProjectNotFoundError'
     post:
       tags: [Applications]
       operationId: createApplication
       summary: Create an application inside a project
+      description: Stores audit execution defaults such as device, viewport, wait time, and WCAG target.
       requestBody:
         required: true
         content:
@@ -140,7 +191,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ApplicationCreateRequest'
             examples:
-              happyPath:
+              storefrontDesktop:
                 $ref: '#/components/examples/ApplicationCreateRequest'
       responses:
         '201':
@@ -153,11 +204,32 @@ paths:
                 createdApplication:
                   $ref: '#/components/examples/ApplicationResponse'
         '400':
-          $ref: '#/components/responses/ValidationError'
+          description: Request validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                invalidApplication:
+                  $ref: '#/components/examples/ApplicationCreateValidationError'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                projectNotFound:
+                  $ref: '#/components/examples/ProjectNotFoundError'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Request failed due to an execution error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                applicationStoreUnavailable:
+                  $ref: '#/components/examples/ApplicationPersistenceError'
 
   /applications/{applicationId}:
     parameters:
@@ -177,7 +249,14 @@ paths:
                 application:
                   $ref: '#/components/examples/ApplicationResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                applicationNotFound:
+                  $ref: '#/components/examples/ApplicationNotFoundError'
     patch:
       tags: [Applications]
       operationId: updateApplication
@@ -189,7 +268,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ApplicationUpdateRequest'
             examples:
-              adjustViewport:
+              tuneViewportAndWait:
                 $ref: '#/components/examples/ApplicationUpdateRequest'
       responses:
         '200':
@@ -202,11 +281,32 @@ paths:
                 updatedApplication:
                   $ref: '#/components/examples/ApplicationUpdatedResponse'
         '400':
-          $ref: '#/components/responses/ValidationError'
+          description: Request validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                invalidApplicationUpdate:
+                  $ref: '#/components/examples/ApplicationUpdateValidationError'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                applicationNotFound:
+                  $ref: '#/components/examples/ApplicationNotFoundError'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Request failed due to an execution error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                applicationStoreUnavailable:
+                  $ref: '#/components/examples/ApplicationPersistenceError'
 
   /applications/{applicationId}/screens:
     parameters:
@@ -215,6 +315,7 @@ paths:
       tags: [Screens]
       operationId: listScreensByApplication
       summary: List screens for an application
+      description: Returns the manually registered URLs that can be selected in report configurations.
       responses:
         '200':
           description: Screens retrieved successfully
@@ -223,14 +324,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/ScreenListResponse'
               examples:
-                screenList:
+                screens:
                   $ref: '#/components/examples/ScreenListResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                applicationNotFound:
+                  $ref: '#/components/examples/ApplicationNotFoundError'
     post:
       tags: [Screens]
       operationId: createScreen
       summary: Create a screen inside an application
+      description: Registers one auditable URL. Screens are managed explicitly in the MVP and are not discovered automatically.
       requestBody:
         required: true
         content:
@@ -238,7 +347,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ScreenCreateRequest'
             examples:
-              happyPath:
+              registerCheckoutScreen:
                 $ref: '#/components/examples/ScreenCreateRequest'
       responses:
         '201':
@@ -251,11 +360,32 @@ paths:
                 createdScreen:
                   $ref: '#/components/examples/ScreenResponse'
         '400':
-          $ref: '#/components/responses/ValidationError'
+          description: Request validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                invalidScreen:
+                  $ref: '#/components/examples/ScreenCreateValidationError'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                applicationNotFound:
+                  $ref: '#/components/examples/ApplicationNotFoundError'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Request failed due to an execution error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                screenStoreUnavailable:
+                  $ref: '#/components/examples/ScreenPersistenceError'
 
   /screens/{screenId}:
     parameters:
@@ -275,7 +405,14 @@ paths:
                 screen:
                   $ref: '#/components/examples/ScreenResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                screenNotFound:
+                  $ref: '#/components/examples/ScreenNotFoundError'
     patch:
       tags: [Screens]
       operationId: updateScreen
@@ -287,7 +424,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ScreenUpdateRequest'
             examples:
-              renameScreen:
+              renameCheckoutStep:
                 $ref: '#/components/examples/ScreenUpdateRequest'
       responses:
         '200':
@@ -300,11 +437,32 @@ paths:
                 updatedScreen:
                   $ref: '#/components/examples/ScreenUpdatedResponse'
         '400':
-          $ref: '#/components/responses/ValidationError'
+          description: Request validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                invalidScreenUpdate:
+                  $ref: '#/components/examples/ScreenUpdateValidationError'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                screenNotFound:
+                  $ref: '#/components/examples/ScreenNotFoundError'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Request failed due to an execution error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                screenStoreUnavailable:
+                  $ref: '#/components/examples/ScreenPersistenceError'
 
   /applications/{applicationId}/reports:
     parameters:
@@ -313,6 +471,7 @@ paths:
       tags: [Reports]
       operationId: listReportsByApplication
       summary: List reports for an application
+      description: Returns reusable audit definitions. Reports store configuration only and do not represent execution history.
       responses:
         '200':
           description: Reports retrieved successfully
@@ -321,14 +480,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReportListResponse'
               examples:
-                reportList:
+                reports:
                   $ref: '#/components/examples/ReportListResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                applicationNotFound:
+                  $ref: '#/components/examples/ApplicationNotFoundError'
     post:
       tags: [Reports]
       operationId: createReport
       summary: Create a report inside an application
+      description: Creates a reusable audit configuration. No audit is executed until a report run is triggered.
       requestBody:
         required: true
         content:
@@ -336,8 +503,10 @@ paths:
             schema:
               $ref: '#/components/schemas/ReportCreateRequest'
             examples:
-              happyPath:
+              publicPurchaseFlow:
                 $ref: '#/components/examples/ReportCreateRequest'
+              authenticatedPortalAudit:
+                $ref: '#/components/examples/ReportCreateRequestWithAuthentication'
       responses:
         '201':
           description: Report created successfully
@@ -349,11 +518,32 @@ paths:
                 createdReport:
                   $ref: '#/components/examples/ReportResponse'
         '400':
-          $ref: '#/components/responses/ValidationError'
+          description: Request validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                invalidReport:
+                  $ref: '#/components/examples/ReportCreateValidationError'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                applicationNotFound:
+                  $ref: '#/components/examples/ApplicationNotFoundError'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Request failed due to an execution error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                reportStoreUnavailable:
+                  $ref: '#/components/examples/ReportPersistenceError'
 
   /reports/{reportId}:
     parameters:
@@ -373,11 +563,19 @@ paths:
                 report:
                   $ref: '#/components/examples/ReportResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                reportNotFound:
+                  $ref: '#/components/examples/ReportNotFoundError'
     patch:
       tags: [Reports]
       operationId: updateReport
       summary: Update a report
+      description: Use to rename a report, change screen selection, or add optional authentication for protected environments.
       requestBody:
         required: true
         content:
@@ -385,7 +583,7 @@ paths:
             schema:
               $ref: '#/components/schemas/ReportUpdateRequest'
             examples:
-              disableAuthentication:
+              enableAuthentication:
                 $ref: '#/components/examples/ReportUpdateRequest'
       responses:
         '200':
@@ -398,11 +596,32 @@ paths:
                 updatedReport:
                   $ref: '#/components/examples/ReportUpdatedResponse'
         '400':
-          $ref: '#/components/responses/ValidationError'
+          description: Request validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+              examples:
+                invalidReportUpdate:
+                  $ref: '#/components/examples/ReportUpdateValidationError'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                reportNotFound:
+                  $ref: '#/components/examples/ReportNotFoundError'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Request failed due to an execution error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                reportStoreUnavailable:
+                  $ref: '#/components/examples/ReportPersistenceError'
 
   /reports/{reportId}/report-runs:
     parameters:
@@ -411,6 +630,7 @@ paths:
       tags: [ReportRuns]
       operationId: listReportRunsByReport
       summary: List report runs for a report
+      description: Returns execution history for one report, including in-progress runs and terminal results.
       responses:
         '200':
           description: Report runs retrieved successfully
@@ -419,15 +639,22 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReportRunListResponse'
               examples:
-                runList:
+                reportRuns:
                   $ref: '#/components/examples/ReportRunListResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                reportNotFound:
+                  $ref: '#/components/examples/ReportNotFoundError'
     post:
       tags: [ReportRuns]
       operationId: createReportRun
       summary: Trigger a new report run
-      description: Creates a new execution instance for the specified report.
+      description: Creates a new execution instance for the specified report. The initial status is `pending` and execution progresses asynchronously through the report-run lifecycle.
       responses:
         '201':
           description: Report run created successfully
@@ -439,9 +666,23 @@ paths:
                 createdRun:
                   $ref: '#/components/examples/ReportRunPendingResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                reportNotFound:
+                  $ref: '#/components/examples/ReportNotFoundError'
         '500':
-          $ref: '#/components/responses/InternalServerError'
+          description: Request failed due to an execution error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                auditEngineUnavailable:
+                  $ref: '#/components/examples/ReportRunExecutionError'
 
   /report-runs/{reportRunId}:
     parameters:
@@ -459,12 +700,21 @@ paths:
               schema:
                 $ref: '#/components/schemas/ReportRunResponse'
               examples:
+                runningRun:
+                  $ref: '#/components/examples/ReportRunRunningResponse'
                 completedRun:
                   $ref: '#/components/examples/ReportRunCompletedResponse'
                 failedRun:
                   $ref: '#/components/examples/ReportRunFailedResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                reportRunNotFound:
+                  $ref: '#/components/examples/ReportRunNotFoundError'
 
   /report-runs/{reportRunId}/findings:
     parameters:
@@ -473,6 +723,7 @@ paths:
       tags: [Findings]
       operationId: listFindingsByReportRun
       summary: List findings for a report run
+      description: Returns normalized findings for the run. Raw axe-core payloads are intentionally not exposed by the public API.
       responses:
         '200':
           description: Findings retrieved successfully
@@ -481,10 +732,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/FindingListResponse'
               examples:
-                findingList:
+                findings:
                   $ref: '#/components/examples/FindingListResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                reportRunNotFound:
+                  $ref: '#/components/examples/ReportRunNotFoundError'
 
   /findings/{findingId}:
     parameters:
@@ -504,7 +762,14 @@ paths:
                 finding:
                   $ref: '#/components/examples/FindingResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                findingNotFound:
+                  $ref: '#/components/examples/FindingNotFoundError'
 
   /guidelines:
     get:
@@ -540,7 +805,14 @@ paths:
                 guideline:
                   $ref: '#/components/examples/GuidelineResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutionErrorResponse'
+              examples:
+                guidelineNotFound:
+                  $ref: '#/components/examples/GuidelineNotFoundError'
 components:
   parameters:
     ProjectId:
@@ -599,73 +871,64 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/ExecutionErrorResponse'
-          examples:
-            resourceNotFound:
-              $ref: '#/components/examples/ResourceNotFoundError'
     ValidationError:
       description: Request validation failed
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
-          examples:
-            invalidRequest:
-              $ref: '#/components/examples/ValidationError'
     InternalServerError:
       description: Request failed due to an execution error
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ExecutionErrorResponse'
-          examples:
-            executionFailure:
-              $ref: '#/components/examples/InternalServerError'
   examples:
     ProjectCreateRequest:
       summary: Create project request
       value:
-        name: Ecommerce Accessibility Baseline
+        name: Acme Storefront Accessibility Baseline
         customerName: Acme Retail
     ProjectUpdateRequest:
       summary: Update project request
       value:
-        name: Ecommerce Accessibility Baseline - Q2
+        name: Acme Storefront Accessibility Baseline - Spring Release
     ProjectResponse:
       summary: Project response
       value:
         data:
           id: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
-          name: Ecommerce Accessibility Baseline
+          name: Acme Storefront Accessibility Baseline
           customerName: Acme Retail
-          createdAt: '2026-03-30T10:00:00Z'
-          updatedAt: '2026-03-30T10:00:00Z'
+          createdAt: '2026-04-02T10:00:00Z'
+          updatedAt: '2026-04-02T10:00:00Z'
     ProjectUpdatedResponse:
       summary: Updated project response
       value:
         data:
           id: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
-          name: Ecommerce Accessibility Baseline - Q2
+          name: Acme Storefront Accessibility Baseline - Spring Release
           customerName: Acme Retail
-          createdAt: '2026-03-30T10:00:00Z'
-          updatedAt: '2026-03-31T09:15:00Z'
+          createdAt: '2026-04-02T10:00:00Z'
+          updatedAt: '2026-04-03T08:45:00Z'
     ProjectListResponse:
       summary: Project list response
       value:
         data:
           - id: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
-            name: Ecommerce Accessibility Baseline
+            name: Acme Storefront Accessibility Baseline
             customerName: Acme Retail
-            createdAt: '2026-03-30T10:00:00Z'
-            updatedAt: '2026-03-30T10:00:00Z'
+            createdAt: '2026-04-02T10:00:00Z'
+            updatedAt: '2026-04-02T10:00:00Z'
           - id: 6fe32831-c8d9-4bcf-9f17-e2c94c17a836
-            name: Marketing Site Audit
+            name: Northwind Health Patient Portal Audit
             customerName: Northwind Health
-            createdAt: '2026-03-29T15:45:00Z'
-            updatedAt: '2026-03-29T15:45:00Z'
+            createdAt: '2026-03-28T15:45:00Z'
+            updatedAt: '2026-03-29T11:20:00Z'
     ApplicationCreateRequest:
       summary: Create application request
       value:
-        name: Web Storefront
+        name: Acme Storefront
         device: desktop
         width: 1440
         height: 900
@@ -679,16 +942,16 @@ components:
     ApplicationUpdateRequest:
       summary: Update application request
       value:
-        width: 1280
-        height: 800
-        waitTimeMs: 2000
+        width: 1366
+        height: 768
+        waitTimeMs: 2200
     ApplicationResponse:
       summary: Application response
       value:
         data:
           id: 48d52f4f-37da-4786-8b79-172d4f2d358b
           projectId: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
-          name: Web Storefront
+          name: Acme Storefront
           device: desktop
           width: 1440
           height: 900
@@ -699,34 +962,34 @@ components:
             levels:
               - A
               - AA
-          createdAt: '2026-03-30T10:05:00Z'
-          updatedAt: '2026-03-30T10:05:00Z'
+          createdAt: '2026-04-02T10:05:00Z'
+          updatedAt: '2026-04-02T10:05:00Z'
     ApplicationUpdatedResponse:
       summary: Updated application response
       value:
         data:
           id: 48d52f4f-37da-4786-8b79-172d4f2d358b
           projectId: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
-          name: Web Storefront
+          name: Acme Storefront
           device: desktop
-          width: 1280
-          height: 800
-          waitTimeMs: 2000
+          width: 1366
+          height: 768
+          waitTimeMs: 2200
           accessibilityTarget:
             standard: WCAG
             version: '2.2'
             levels:
               - A
               - AA
-          createdAt: '2026-03-30T10:05:00Z'
-          updatedAt: '2026-03-31T09:20:00Z'
+          createdAt: '2026-04-02T10:05:00Z'
+          updatedAt: '2026-04-03T08:55:00Z'
     ApplicationListResponse:
       summary: Application list response
       value:
         data:
           - id: 48d52f4f-37da-4786-8b79-172d4f2d358b
             projectId: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
-            name: Web Storefront
+            name: Acme Storefront
             device: desktop
             width: 1440
             height: 900
@@ -737,32 +1000,32 @@ components:
               levels:
                 - A
                 - AA
-            createdAt: '2026-03-30T10:05:00Z'
-            updatedAt: '2026-03-30T10:05:00Z'
+            createdAt: '2026-04-02T10:05:00Z'
+            updatedAt: '2026-04-02T10:05:00Z'
           - id: a66dc5f7-c5c2-4583-8f90-b02696d7f540
             projectId: 7ed95d96-7f5a-4c91-a7f8-2b1e63d2d9cc
-            name: Mobile Checkout
-            device: phone
-            width: 390
-            height: 844
-            waitTimeMs: 2000
+            name: Acme Help Center
+            device: desktop
+            width: 1280
+            height: 800
+            waitTimeMs: 1000
             accessibilityTarget:
               standard: WCAG
               version: '2.1'
               levels:
                 - A
                 - AA
-            createdAt: '2026-03-30T10:06:00Z'
-            updatedAt: '2026-03-30T10:06:00Z'
+            createdAt: '2026-04-02T10:08:00Z'
+            updatedAt: '2026-04-02T10:08:00Z'
     ScreenCreateRequest:
       summary: Create screen request
       value:
         name: Checkout
-        url: https://store.acme.test/checkout
+        url: https://shop.acme.test/checkout
     ScreenUpdateRequest:
       summary: Update screen request
       value:
-        name: Checkout Step 1
+        name: Checkout - Shipping
     ScreenResponse:
       summary: Screen response
       value:
@@ -770,19 +1033,19 @@ components:
           id: 8246317d-6758-4f6a-9957-695ed30a9e13
           applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
           name: Checkout
-          url: https://store.acme.test/checkout
-          createdAt: '2026-03-30T10:10:00Z'
-          updatedAt: '2026-03-30T10:10:00Z'
+          url: https://shop.acme.test/checkout
+          createdAt: '2026-04-02T10:15:00Z'
+          updatedAt: '2026-04-02T10:15:00Z'
     ScreenUpdatedResponse:
       summary: Updated screen response
       value:
         data:
           id: 8246317d-6758-4f6a-9957-695ed30a9e13
           applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
-          name: Checkout Step 1
-          url: https://store.acme.test/checkout
-          createdAt: '2026-03-30T10:10:00Z'
-          updatedAt: '2026-03-31T09:25:00Z'
+          name: Checkout - Shipping
+          url: https://shop.acme.test/checkout
+          createdAt: '2026-04-02T10:15:00Z'
+          updatedAt: '2026-04-03T09:00:00Z'
     ScreenListResponse:
       summary: Screen list response
       value:
@@ -790,76 +1053,89 @@ components:
           - id: ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
             applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
             name: Home
-            url: https://store.acme.test/
-            createdAt: '2026-03-30T10:08:00Z'
-            updatedAt: '2026-03-30T10:08:00Z'
+            url: https://shop.acme.test/
+            createdAt: '2026-04-02T10:10:00Z'
+            updatedAt: '2026-04-02T10:10:00Z'
+          - id: 1ea3c4a2-5df3-4c9c-9419-baa8a9b8d534
+            applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
+            name: Product Details
+            url: https://shop.acme.test/products/ultralight-backpack
+            createdAt: '2026-04-02T10:12:00Z'
+            updatedAt: '2026-04-02T10:12:00Z'
           - id: 8246317d-6758-4f6a-9957-695ed30a9e13
             applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
             name: Checkout
-            url: https://store.acme.test/checkout
-            createdAt: '2026-03-30T10:10:00Z'
-            updatedAt: '2026-03-30T10:10:00Z'
+            url: https://shop.acme.test/checkout
+            createdAt: '2026-04-02T10:15:00Z'
+            updatedAt: '2026-04-02T10:15:00Z'
     ReportCreateRequest:
       summary: Create report request
       value:
-        name: Critical Purchase Flow
+        name: Purchase Journey Baseline
+        authenticationEnabled: false
+        selectedScreenIds:
+          - 1ea3c4a2-5df3-4c9c-9419-baa8a9b8d534
+          - 8246317d-6758-4f6a-9957-695ed30a9e13
+    ReportCreateRequestWithAuthentication:
+      summary: Create report request with authentication
+      value:
+        name: Registered User Checkout Audit
         authenticationEnabled: true
         authentication:
-          loginUrl: https://store.acme.test/login
-          username: audit-user@example.com
+          loginUrl: https://shop.acme.test/account/login
+          username: audit.user@example.com
           password: secret-password
         selectedScreenIds:
-          - ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
           - 8246317d-6758-4f6a-9957-695ed30a9e13
     ReportUpdateRequest:
       summary: Update report request
       value:
-        authenticationEnabled: false
+        authenticationEnabled: true
+        authentication:
+          loginUrl: https://shop.acme.test/account/login
+          username: audit.user@example.com
     ReportResponse:
       summary: Report response
       value:
         data:
           id: aea96d2c-c784-4bff-bdb6-e69cd28f3233
           applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
-          name: Critical Purchase Flow
-          authenticationEnabled: true
-          authentication:
-            loginUrl: https://store.acme.test/login
-            username: audit-user@example.com
+          name: Purchase Journey Baseline
+          authenticationEnabled: false
           selectedScreenIds:
-            - ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+            - 1ea3c4a2-5df3-4c9c-9419-baa8a9b8d534
             - 8246317d-6758-4f6a-9957-695ed30a9e13
-          createdAt: '2026-03-30T10:20:00Z'
-          updatedAt: '2026-03-30T10:20:00Z'
+          createdAt: '2026-04-02T10:30:00Z'
+          updatedAt: '2026-04-02T10:30:00Z'
     ReportUpdatedResponse:
       summary: Updated report response
       value:
         data:
           id: aea96d2c-c784-4bff-bdb6-e69cd28f3233
           applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
-          name: Critical Purchase Flow
-          authenticationEnabled: false
+          name: Purchase Journey Baseline
+          authenticationEnabled: true
+          authentication:
+            loginUrl: https://shop.acme.test/account/login
+            username: audit.user@example.com
           selectedScreenIds:
-            - ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+            - 1ea3c4a2-5df3-4c9c-9419-baa8a9b8d534
             - 8246317d-6758-4f6a-9957-695ed30a9e13
-          createdAt: '2026-03-30T10:20:00Z'
-          updatedAt: '2026-03-31T09:30:00Z'
+          createdAt: '2026-04-02T10:30:00Z'
+          updatedAt: '2026-04-03T09:05:00Z'
     ReportListResponse:
       summary: Report list response
       value:
         data:
           - id: aea96d2c-c784-4bff-bdb6-e69cd28f3233
             applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
-            name: Critical Purchase Flow
-            authenticationEnabled: true
-            authentication:
-              loginUrl: https://store.acme.test/login
-              username: audit-user@example.com
+            name: Purchase Journey Baseline
+            authenticationEnabled: false
             selectedScreenIds:
-              - ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+              - 1ea3c4a2-5df3-4c9c-9419-baa8a9b8d534
               - 8246317d-6758-4f6a-9957-695ed30a9e13
-            createdAt: '2026-03-30T10:20:00Z'
-            updatedAt: '2026-03-30T10:20:00Z'
+            createdAt: '2026-04-02T10:30:00Z'
+            updatedAt: '2026-04-02T10:30:00Z'
     ReportRunPendingResponse:
       summary: Pending report run creation response
       value:
@@ -875,8 +1151,27 @@ components:
             screensScanned: 0
             screensPlanned: 2
             findingsByImpact: {}
-          createdAt: '2026-03-30T10:30:00Z'
-          updatedAt: '2026-03-30T10:30:00Z'
+          createdAt: '2026-04-03T09:30:00Z'
+          updatedAt: '2026-04-03T09:30:00Z'
+    ReportRunRunningResponse:
+      summary: Running report run status response
+      value:
+        data:
+          id: 5c6d3d8b-f532-4bfd-9f56-6f284d131f70
+          reportId: aea96d2c-c784-4bff-bdb6-e69cd28f3233
+          status: running
+          startedAt: '2026-04-03T09:40:10Z'
+          finishedAt: null
+          errorMessage: null
+          summary:
+            totalFindings: 3
+            screensScanned: 1
+            screensPlanned: 2
+            findingsByImpact:
+              moderate: 1
+              serious: 2
+          createdAt: '2026-04-03T09:40:00Z'
+          updatedAt: '2026-04-03T09:41:12Z'
     ReportRunListResponse:
       summary: Report run list response
       value:
@@ -892,51 +1187,40 @@ components:
               screensScanned: 0
               screensPlanned: 2
               findingsByImpact: {}
-            createdAt: '2026-03-30T10:30:00Z'
-            updatedAt: '2026-03-30T10:30:00Z'
+            createdAt: '2026-04-03T09:30:00Z'
+            updatedAt: '2026-04-03T09:30:00Z'
+          - id: 5c6d3d8b-f532-4bfd-9f56-6f284d131f70
+            reportId: aea96d2c-c784-4bff-bdb6-e69cd28f3233
+            status: running
+            startedAt: '2026-04-03T09:40:10Z'
+            finishedAt: null
+            errorMessage: null
+            summary:
+              totalFindings: 3
+              screensScanned: 1
+              screensPlanned: 2
+              findingsByImpact:
+                moderate: 1
+                serious: 2
+            createdAt: '2026-04-03T09:40:00Z'
+            updatedAt: '2026-04-03T09:41:12Z'
           - id: 0f11a4f6-f26f-471c-a59d-4b3ef6f6a3b2
             reportId: aea96d2c-c784-4bff-bdb6-e69cd28f3233
             status: completed
-            startedAt: '2026-03-29T14:00:05Z'
-            finishedAt: '2026-03-29T14:02:18Z'
+            startedAt: '2026-04-02T14:00:05Z'
+            finishedAt: '2026-04-02T14:02:18Z'
             errorMessage: null
             summary:
-              totalFindings: 14
+              totalFindings: 8
               screensScanned: 2
               screensPlanned: 2
               findingsByImpact:
-                minor: 3
-                moderate: 5
-                serious: 4
-                critical: 2
-            createdAt: '2026-03-29T14:00:00Z'
-            updatedAt: '2026-03-29T14:02:18Z'
-    ValidationError:
-      summary: Validation error response
-      value:
-        error:
-          type: validation_error
-          code: invalid_request
-          message: One or more request fields are invalid.
-          details:
-            - field: name
-              issue: must not be empty
-            - field: targetUrl
-              issue: must be a valid URI
-    ResourceNotFoundError:
-      summary: Not found execution error response
-      value:
-        error:
-          type: execution_error
-          code: resource_not_found
-          message: Report run 9f2ddf18-a5da-4dde-a5d3-9a1e1bc247ad was not found.
-    InternalServerError:
-      summary: Internal execution error response
-      value:
-        error:
-          type: execution_error
-          code: audit_engine_unavailable
-          message: The audit engine is temporarily unavailable. Retry later.
+                minor: 1
+                moderate: 4
+                serious: 2
+                critical: 1
+            createdAt: '2026-04-02T14:00:00Z'
+            updatedAt: '2026-04-02T14:02:18Z'
     ReportRunCompletedResponse:
       summary: Completed report run status response
       value:
@@ -944,20 +1228,20 @@ components:
           id: 0f11a4f6-f26f-471c-a59d-4b3ef6f6a3b2
           reportId: aea96d2c-c784-4bff-bdb6-e69cd28f3233
           status: completed
-          startedAt: '2026-03-30T14:00:05Z'
-          finishedAt: '2026-03-30T14:02:18Z'
+          startedAt: '2026-04-02T14:00:05Z'
+          finishedAt: '2026-04-02T14:02:18Z'
           errorMessage: null
           summary:
-            totalFindings: 14
+            totalFindings: 8
             screensScanned: 2
             screensPlanned: 2
             findingsByImpact:
-              minor: 3
-              moderate: 5
-              serious: 4
-              critical: 2
-          createdAt: '2026-03-30T14:00:00Z'
-          updatedAt: '2026-03-30T14:02:18Z'
+              minor: 1
+              moderate: 4
+              serious: 2
+              critical: 1
+          createdAt: '2026-04-02T14:00:00Z'
+          updatedAt: '2026-04-02T14:02:18Z'
     ReportRunFailedResponse:
       summary: Failed report run status response
       value:
@@ -965,20 +1249,18 @@ components:
           id: 68cc7ed8-6d94-4204-ae45-59773d82f7e5
           reportId: aea96d2c-c784-4bff-bdb6-e69cd28f3233
           status: failed
-          startedAt: '2026-03-30T14:00:05Z'
-          finishedAt: '2026-03-30T14:01:11Z'
-          errorMessage: Browser navigation timed out while loading the checkout screen.
+          startedAt: '2026-04-01T16:10:04Z'
+          finishedAt: '2026-04-01T16:10:58Z'
+          errorMessage: Browser navigation timed out after a login redirect loop on screen Checkout.
           summary:
-            totalFindings: 4
+            totalFindings: 2
             screensScanned: 1
             screensPlanned: 2
             findingsByImpact:
-              minor: 1
-              moderate: 2
+              moderate: 1
               serious: 1
-              critical: 0
-          createdAt: '2026-03-30T14:00:00Z'
-          updatedAt: '2026-03-30T14:01:11Z'
+          createdAt: '2026-04-01T16:10:00Z'
+          updatedAt: '2026-04-01T16:10:58Z'
     FindingResponse:
       summary: Finding response
       value:
@@ -989,10 +1271,10 @@ components:
           guidelineId: 117f8567-0957-4d0d-99f5-c5a8b771b1bd
           ruleCode: color-contrast
           message: Elements must meet minimum color contrast ratio thresholds.
-          selector: .checkout-total
-          htmlSnippet: <div class="checkout-total">$124.99</div>
+          selector: .order-summary__total
+          htmlSnippet: <div class="order-summary__total">$124.99</div>
           impact: serious
-          createdAt: '2026-03-30T14:02:00Z'
+          createdAt: '2026-04-02T14:02:00Z'
     FindingListResponse:
       summary: Finding list response
       value:
@@ -1003,20 +1285,20 @@ components:
             guidelineId: 117f8567-0957-4d0d-99f5-c5a8b771b1bd
             ruleCode: color-contrast
             message: Elements must meet minimum color contrast ratio thresholds.
-            selector: .checkout-total
-            htmlSnippet: <div class="checkout-total">$124.99</div>
+            selector: .order-summary__total
+            htmlSnippet: <div class="order-summary__total">$124.99</div>
             impact: serious
-            createdAt: '2026-03-30T14:02:00Z'
+            createdAt: '2026-04-02T14:02:00Z'
           - id: 2f777682-2067-4da7-8165-75fa8280e793
             reportRunId: 0f11a4f6-f26f-471c-a59d-4b3ef6f6a3b2
-            screenId: ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+            screenId: 1ea3c4a2-5df3-4c9c-9419-baa8a9b8d534
             guidelineId: b3b68fec-8f48-4cf0-a06f-f98ad06a7060
             ruleCode: image-alt
             message: Images must have alternative text.
-            selector: img.hero-banner
-            htmlSnippet: <img class="hero-banner" src="/hero.png">
+            selector: img.product-gallery__image
+            htmlSnippet: <img class="product-gallery__image" src="/assets/ultralight-backpack-front.png">
             impact: moderate
-            createdAt: '2026-03-30T14:01:10Z'
+            createdAt: '2026-04-02T14:01:12Z'
     GuidelineResponse:
       summary: Guideline response
       value:
@@ -1025,7 +1307,7 @@ components:
           code: 1.4.3
           name: Contrast (Minimum)
           level: AA
-          standard: WCAG 2.1
+          standard: WCAG 2.2
           createdAt: '2026-03-01T09:00:00Z'
           updatedAt: '2026-03-01T09:00:00Z'
     GuidelineListResponse:
@@ -1036,16 +1318,186 @@ components:
             code: 1.4.3
             name: Contrast (Minimum)
             level: AA
-            standard: WCAG 2.1
+            standard: WCAG 2.2
             createdAt: '2026-03-01T09:00:00Z'
             updatedAt: '2026-03-01T09:00:00Z'
           - id: b3b68fec-8f48-4cf0-a06f-f98ad06a7060
             code: 1.1.1
             name: Non-text Content
             level: A
-            standard: WCAG 2.1
+            standard: WCAG 2.2
             createdAt: '2026-03-01T09:00:00Z'
             updatedAt: '2026-03-01T09:00:00Z'
+    ProjectCreateValidationError:
+      summary: Invalid create-project request
+      value:
+        error:
+          type: validation_error
+          code: invalid_request
+          message: One or more request fields are invalid.
+          details:
+            - field: name
+              issue: must not be empty
+            - field: customerName
+              issue: must not be empty
+    ProjectUpdateValidationError:
+      summary: Invalid update-project request
+      value:
+        error:
+          type: validation_error
+          code: invalid_request
+          message: One or more request fields are invalid.
+          details:
+            - field: body
+              issue: must include at least one of name or customerName
+    ProjectNotFoundError:
+      summary: Project not found
+      value:
+        error:
+          type: execution_error
+          code: resource_not_found
+          message: Project 90a6c8e4-eefe-4e5c-b9cb-489db0f8da1f was not found.
+    ProjectPersistenceError:
+      summary: Project persistence failure
+      value:
+        error:
+          type: execution_error
+          code: project_store_unavailable
+          message: The project could not be saved because the configuration store is temporarily unavailable.
+    ApplicationCreateValidationError:
+      summary: Invalid create-application request
+      value:
+        error:
+          type: validation_error
+          code: invalid_request
+          message: One or more request fields are invalid.
+          details:
+            - field: device
+              issue: must be one of desktop, tablet, or phone
+            - field: width
+              issue: must be greater than 0
+    ApplicationUpdateValidationError:
+      summary: Invalid update-application request
+      value:
+        error:
+          type: validation_error
+          code: invalid_request
+          message: One or more request fields are invalid.
+          details:
+            - field: waitTimeMs
+              issue: must be greater than or equal to 0
+    ApplicationNotFoundError:
+      summary: Application not found
+      value:
+        error:
+          type: execution_error
+          code: resource_not_found
+          message: Application 2602d8e2-f1c1-4d90-8560-e4cbcbb99e85 was not found.
+    ApplicationPersistenceError:
+      summary: Application persistence failure
+      value:
+        error:
+          type: execution_error
+          code: application_store_unavailable
+          message: The application settings could not be saved because the configuration store is temporarily unavailable.
+    ScreenCreateValidationError:
+      summary: Invalid create-screen request
+      value:
+        error:
+          type: validation_error
+          code: invalid_request
+          message: One or more request fields are invalid.
+          details:
+            - field: url
+              issue: must be a valid URI
+    ScreenUpdateValidationError:
+      summary: Invalid update-screen request
+      value:
+        error:
+          type: validation_error
+          code: invalid_request
+          message: One or more request fields are invalid.
+          details:
+            - field: name
+              issue: must not be empty
+    ScreenNotFoundError:
+      summary: Screen not found
+      value:
+        error:
+          type: execution_error
+          code: resource_not_found
+          message: Screen 0d4b2baf-406b-4afe-8e1c-d96d7c9d2814 was not found.
+    ScreenPersistenceError:
+      summary: Screen persistence failure
+      value:
+        error:
+          type: execution_error
+          code: screen_store_unavailable
+          message: The screen could not be saved because the configuration store is temporarily unavailable.
+    ReportCreateValidationError:
+      summary: Invalid create-report request
+      value:
+        error:
+          type: validation_error
+          code: invalid_request
+          message: One or more request fields are invalid.
+          details:
+            - field: selectedScreenIds[1]
+              issue: screen 4ecff2ff-bdb1-4c66-a6c1-80e8d93b85e0 does not belong to application 48d52f4f-37da-4786-8b79-172d4f2d358b
+    ReportUpdateValidationError:
+      summary: Invalid update-report request
+      value:
+        error:
+          type: validation_error
+          code: invalid_request
+          message: One or more request fields are invalid.
+          details:
+            - field: authentication.loginUrl
+              issue: is required when authenticationEnabled is true
+            - field: authentication.username
+              issue: is required when authenticationEnabled is true
+    ReportNotFoundError:
+      summary: Report not found
+      value:
+        error:
+          type: execution_error
+          code: resource_not_found
+          message: Report d2d7a4f5-1c6c-4a0f-95ab-f4e9e90db05b was not found.
+    ReportPersistenceError:
+      summary: Report persistence failure
+      value:
+        error:
+          type: execution_error
+          code: report_store_unavailable
+          message: The report configuration could not be saved because the configuration store is temporarily unavailable.
+    ReportRunExecutionError:
+      summary: Audit engine unavailable
+      value:
+        error:
+          type: execution_error
+          code: audit_engine_unavailable
+          message: The audit runner could not start the report run because the audit engine is temporarily unavailable. Retry later.
+    ReportRunNotFoundError:
+      summary: Report run not found
+      value:
+        error:
+          type: execution_error
+          code: resource_not_found
+          message: Report run 9f2ddf18-a5da-4dde-a5d3-9a1e1bc247ad was not found.
+    FindingNotFoundError:
+      summary: Finding not found
+      value:
+        error:
+          type: execution_error
+          code: resource_not_found
+          message: Finding fbd551a7-b023-4f77-ac7d-5d16f91a1e0f was not found.
+    GuidelineNotFoundError:
+      summary: Guideline not found
+      value:
+        error:
+          type: execution_error
+          code: resource_not_found
+          message: Guideline d7a76c2b-7ed7-4fb9-a7d6-668b11e1a4fb was not found.
   schemas:
     ErrorKind:
       type: string
@@ -1508,6 +1960,7 @@ components:
 
     Finding:
       type: object
+      description: Normalized accessibility issue produced by a specific report run.
       required:
         - id
         - reportRunId
@@ -1532,13 +1985,17 @@ components:
           format: uuid
         ruleCode:
           type: string
+          description: Stable scanner rule identifier retained in the normalized finding.
         message:
           type: string
+          description: Human-readable explanation of the accessibility issue.
         selector:
           type: string
+          description: CSS selector path for the element instance reported by the scanner.
         htmlSnippet:
           type: string
           nullable: true
+          description: Short HTML snippet captured for the offending element when available.
         impact:
           $ref: '#/components/schemas/FindingImpact'
         createdAt:

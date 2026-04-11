@@ -183,8 +183,11 @@ A single execution instance of a report.
 - `startedAt` (optional until run starts)
 - `finishedAt` (optional until run ends)
 - `errorMessage` (optional)
-- `summaryTotalFindings` (optional)
-- `summaryScreensScanned` (optional)
+- `summary` (optional)
+- `summary.totalFindings` (optional)
+- `summary.screensScanned` (optional)
+- `summary.screensPlanned` (optional)
+- `summary.findingsByImpact` (optional)
 - `createdAt`
 - `updatedAt`
 
@@ -252,11 +255,9 @@ A normalized accessibility issue produced by a report run.
 - `message`
 - `impact` (optional if available)
 - `severity` (optional if modeled separately)
-- `elementHtml` (optional)
-- `selectorPath`
-- `status`
+- `htmlSnippet` (optional)
+- `selector`
 - `createdAt`
-- `updatedAt`
 
 ### Relationships
 - One Finding belongs to one ReportRun
@@ -270,7 +271,12 @@ The mockups indicate that findings may include:
 - element snippet
 - selector or DOM path
 - screen association
-- resolved / unresolved state
+
+For the current MVP public contract, findings are read-only scan results.
+
+This means the normalized API shape does not currently expose:
+- a finding lifecycle status
+- an `updatedAt` field
 
 ### Important Modeling Rule
 The default backend response shape must be normalized.

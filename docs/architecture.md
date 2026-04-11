@@ -384,6 +384,10 @@ However:
 
 The API contract will be defined using OpenAPI and explored through Swagger UI.
 
+Swagger examples should reinforce the intended resource flow by reusing one connected MVP dataset across projects, applications, screens, reports, report runs, findings, and guidelines.
+
+Error examples should be attached at the operation level when possible, so nested resources and validation failures describe the correct parent resource, field set, or execution failure.
+
 ## Development-Time Architecture
 
 For the validation phase, the system can start with a simple shape:
