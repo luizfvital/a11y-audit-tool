@@ -30,6 +30,7 @@ Guideline → Finding
 - A **Project** represents a customer initiative.
 - A **Project** contains one or more **Applications**.
 - An **Application** contains one or more **Screens** to be audited.
+- In the MVP public API, screens are managed through the parent **Application** rather than as a standalone resource.
 - A **Report** defines an audit configuration for a selected set of screens.
 - A **ReportRun** represents one execution instance of a report.
 - A **Finding** represents one normalized accessibility issue detected during a report run.
@@ -89,6 +90,7 @@ Current product flows require an application to include runtime and audit config
 - viewport width
 - viewport height
 - wait time
+- one or more application-owned screens, either at creation time or through later application updates
 
 Possible MVP values:
 - `device`: desktop, tablet, phone
@@ -97,6 +99,8 @@ Possible MVP values:
 - `accessibilityTarget.levels`: A, AA, AAA
 
 These exact enums can be finalized during API contract design.
+
+In the MVP public API, application create and update operations may carry a nested screen collection.
 
 ## 3. Screen
 
@@ -122,6 +126,8 @@ Current product flows manage screens from application-level configuration.
 A screen is defined minimally by:
 - a human-readable name
 - a target URL
+
+In the MVP public API, a `Screen` remains a domain entity but is created and updated through the parent `Application`.
 
 ## 4. Report
 
@@ -153,6 +159,8 @@ Current product flows require report creation with:
 - optional authentication toggle
 - optional login URL / username / password
 
+Selected screens are chosen from the screen collection that belongs to the report's application.
+
 Authentication support may be only partially implemented in the MVP, but the model should allow it.
 
 ### Important Distinction
@@ -174,6 +182,8 @@ A join relationship representing which screens are included in a report.
 
 ### Notes
 Even if not exposed as a first-class API resource, this relationship should exist in the domain model.
+
+The public API may manage this relationship through the `Report` payload while screen creation and updates remain under the parent `Application`.
 
 ## 6. ReportRun
 

@@ -46,6 +46,8 @@ The backend platform owns both:
 - the audit domain resources such as projects, applications, screens, reports, report runs, findings, and guidelines
 - the audit execution flow that produces normalized results
 
+In the MVP public API, screens are managed within the application context rather than as a standalone top-level resource.
+
 ## Why
 
 An API-first design is a strong fit for:
@@ -71,7 +73,7 @@ This means the system is intentionally split into:
 Any future frontend or integration can consume the backend through REST APIs.
 
 Responsibilities:
-- provide UI or integration flows to create and edit projects, applications, screens, and reports through the API
+- provide UI or integration flows to create and edit projects, applications, application-owned screens, and reports through the API
 - trigger report runs through the API
 - read findings, summaries, and guideline data through the API
 - filter and explore audit results
@@ -85,6 +87,7 @@ Responsibilities:
 - expose REST endpoints
 - validate requests
 - create, read, and update audit-domain resources
+- support creating and updating screens through the application context
 - receive report run requests
 - persist domain data
 - orchestrate audit execution
@@ -194,7 +197,7 @@ Represents a reusable scan definition for an application.
 
 A report is a configuration object. It selects one or more screens and can be executed multiple times.
 
-The screen selection is modeled as a many-to-many relationship, even if the join is not exposed as a first-class API resource.
+The screen selection is modeled as a many-to-many relationship, even if screens are managed through the parent application in the MVP public API.
 
 ### ReportRun
 Represents one execution of a report.
@@ -217,17 +220,16 @@ Each finding belongs to a report run and references both the originating screen 
 
 ```text
 1. User creates project
-2. User creates application
-3. User registers screens
-4. User creates report
-5. User triggers report run
-6. Backend receives request
-7. Audit runner launches browser
-8. Target pages are loaded
-9. axe-core scans each page
-10. Results are normalized
-11. Findings are returned and/or stored
-12. Report run is marked completed or failed
+2. User creates application with screens
+3. User creates report
+4. User triggers report run
+5. Backend receives request
+6. Audit runner launches browser
+7. Target pages are loaded
+8. axe-core scans each page
+9. Results are normalized
+10. Findings are returned and/or stored
+11. Report run is marked completed or failed
 ```
 
 ## API Design Principles
@@ -237,7 +239,6 @@ The backend follows a resource-oriented API structure.
 Main MVP resource groups:
 - `Projects`
 - `Applications`
-- `Screens`
 - `Reports`
 - `ReportRuns`
 - `Findings`
@@ -261,24 +262,18 @@ Responsibility:
 - belong to one project
 - store audit execution defaults such as device, viewport, wait time, and accessibility target
 - own screens and reports
-
-#### Screens
-Auditable URLs inside one application.
-
-Responsibility:
-- store screen name and URL
-- act as selectable audit targets for reports
+- allow screens to be created and updated within the application context
 
 #### Reports
 Reusable audit definitions.
 
 Responsibility:
 - belong to one application
-- define which screens are selected for execution
+- define which application-owned screens are selected for execution
 - optionally store authentication configuration
 - act as the parent resource from which report runs are created
 
-The `ReportScreen` relationship exists in the domain model, but it does not need to be exposed as a first-class API resource in the MVP. Screen selection can be managed inside the `Report` payload.
+The `ReportScreen` relationship exists in the domain model, but it does not need to be exposed as a first-class API resource in the MVP. Screen selection can be managed inside the `Report` payload by referencing screens that belong to the application.
 
 #### ReportRuns
 Execution instances of reports.
@@ -319,8 +314,8 @@ To keep the API predictable, the MVP should use these conventions consistently:
 
 Examples:
 - `/projects/{projectId}/applications`
-- `/applications/{applicationId}/screens`
 - `/applications/{applicationId}/reports`
+- `/applications/{applicationId}/screens`
 - `/reports/{reportId}/report-runs`
 - `/report-runs/{reportRunId}/findings`
 
@@ -338,12 +333,7 @@ POST /projects/{projectId}/applications
 GET /projects/{projectId}/applications
 GET /applications/{applicationId}
 PATCH /applications/{applicationId}
-
-Screens
-POST /applications/{applicationId}/screens
-GET /applications/{applicationId}/screens
-GET /screens/{screenId}
-PATCH /screens/{screenId}
+PUT /applications/{applicationId}/screens
 
 Reports
 POST /applications/{applicationId}/reports
@@ -365,6 +355,10 @@ GET /guidelines
 GET /guidelines/{guidelineId}
 ```
 
+Application creation may include an initial `screens` collection in the request body.
+
+`GET /applications/{applicationId}` may return the application's current screen collection so the client can manage screens in the same application workflow.
+
 ### Why These Endpoints Support the MVP Flow
 
 The MVP flow is:
@@ -373,8 +367,8 @@ The MVP flow is:
 
 This structure supports that flow directly:
 - create a project first
-- create applications under a project
-- register screens under an application
+- create applications under a project, optionally with embedded screens
+- update an application's screen collection through the application context when needed
 - create reports under an application with selected screen IDs
 - trigger execution by creating a `ReportRun` under a report
 - retrieve run status through `GET /report-runs/{reportRunId}`
@@ -389,6 +383,7 @@ This structure supports that flow directly:
 However:
 - `ReportRuns` should be created only from a report context
 - `Findings` should be read-only
+- `Screens` should not have standalone MVP CRUD endpoints
 - `ReportScreen` should remain an internal relationship, not a separate MVP resource group
 
 The API contract will be defined using OpenAPI and explored through Swagger UI.

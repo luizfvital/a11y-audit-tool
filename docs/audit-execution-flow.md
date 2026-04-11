@@ -77,6 +77,8 @@ Before a report can be executed in the MVP, the following must already exist:
 - a `Report` associated with the application
 - one or more selected screens linked to the report
 
+In the MVP public API, those screens are created and maintained through the parent `Application`.
+
 The application provides execution settings such as:
 
 - device type
@@ -116,7 +118,7 @@ The user creates a `Report` for an existing `Application`.
 The report defines:
 
 - a name
-- the set of selected screens
+- the set of selected screens from that application's screen collection
 - optional authentication configuration
 
 At this stage, no audit has been executed yet.

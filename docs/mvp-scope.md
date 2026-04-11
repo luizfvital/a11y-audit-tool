@@ -20,12 +20,11 @@ The MVP will be validated as an **API-first, client-agnostic backend**.
 
 The MVP backend must allow a developer to:
 
-1. Configure an application to audit
-2. Register pages (screens) to scan
-3. Create a report configuration
-4. Trigger an accessibility scan
-5. Execute axe-core using Playwright
-6. Retrieve normalized accessibility findings through the API
+1. Configure an application to audit, including its screens
+2. Create a report configuration
+3. Trigger an accessibility scan
+4. Execute axe-core using Playwright
+5. Retrieve normalized accessibility findings through the API
 
 The MVP proves that the **audit engine, normalization pipeline, and system architecture work end-to-end through the API**.
 
@@ -62,11 +61,13 @@ An application represents a web system being audited.
 Supported actions:
 
 - create application
+- optionally create the initial application screens in the same request
 - associate application to a project
 - configure accessibility target level
 - configure device type
 - configure viewport size
 - configure wait time before scanning
+- update the application's screen collection within the application context
 
 Application configuration must be stored by the backend platform.
 
@@ -79,17 +80,17 @@ MVP configuration includes:
 
 ---
 
-## Screen Registration
+## Application Screens
 
 A screen represents a URL that can be audited.
 
 Supported actions:
 
-- register screen
-- associate screen to an application
-- store URL and screen name
+- define screens as part of application creation or update
+- store screen names and URLs under an application
+- use those application-owned screens as report targets
 
-Registered screens must be stored by the backend platform.
+Defined screens must be stored by the backend platform.
 
 ---
 
@@ -199,6 +200,8 @@ The backend API must include:
 
 This allows manual exploration of the API before any dedicated client exists.
 
+The API examples should demonstrate application creation with embedded screens so the intended MVP workflow is clear.
+
 The OpenAPI examples should present one coherent MVP workflow across the resource hierarchy so that Swagger preview reflects a believable end-to-end audit flow.
 
 Validation and execution error examples should also be operation-specific, so each endpoint demonstrates realistic invalid requests and failure conditions for that resource.
@@ -224,7 +227,7 @@ Automated validation of API endpoints.
 
 The MVP must include a backend-owned database for the audit domain.
 
-This database stores the resource model required by the API, including projects, applications, screens, reports, report runs, guidelines, and findings.
+This database stores the resource model required by the API, including projects, applications, application-owned screens, reports, report runs, guidelines, and findings.
 
 PostgreSQL is the recommended database for the MVP.
 
@@ -278,7 +281,7 @@ Not included:
 - automatic discovery of pages
 - site-wide crawling
 
-Screens must be manually registered.
+Screens must be manually defined under an application.
 
 ---
 
@@ -323,15 +326,14 @@ Backend validation will be performed using:
 The MVP backend is considered complete when the following workflow works end-to-end.
 
 1.	Create project
-2.	Create application
-3.	Register screens
-4.	Create report
-5.	Trigger report run
-6.	Playwright loads each selected screen
-7.	axe-core performs scan
-8.	Findings are collected and normalized
-9.	Findings are linked to screens, report run, and guideline references
-10.	API returns normalized results
+2.	Create application with one or more screens
+3.	Create report
+4.	Trigger report run
+5.	Playwright loads each selected screen
+6.	axe-core performs scan
+7.	Findings are collected and normalized
+8.	Findings are linked to screens, report run, and guideline references
+9.	API returns normalized results
 
 Additionally:
 

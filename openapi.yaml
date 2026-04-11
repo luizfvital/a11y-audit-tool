@@ -13,7 +13,6 @@ servers:
 tags:
   - name: Projects
   - name: Applications
-  - name: Screens
   - name: Reports
   - name: ReportRuns
   - name: Findings
@@ -183,7 +182,7 @@ paths:
       tags: [Applications]
       operationId: createApplication
       summary: Create an application inside a project
-      description: Stores audit execution defaults such as device, viewport, wait time, and WCAG target.
+      description: Stores audit execution defaults such as device, viewport, wait time, and WCAG target. The request may also include the application's initial screen collection.
       requestBody:
         required: true
         content:
@@ -238,6 +237,7 @@ paths:
       tags: [Applications]
       operationId: getApplication
       summary: Get an application by ID
+      description: Retrieves application configuration and may include the current screen collection managed under that application.
       responses:
         '200':
           description: Application retrieved successfully
@@ -311,14 +311,23 @@ paths:
   /applications/{applicationId}/screens:
     parameters:
       - $ref: '#/components/parameters/ApplicationId'
-    get:
-      tags: [Screens]
-      operationId: listScreensByApplication
-      summary: List screens for an application
-      description: Returns the manually registered URLs that can be selected in report configurations.
+    put:
+      tags: [Applications]
+      operationId: replaceApplicationScreens
+      summary: Replace the screen collection for an application
+      description: Replaces the current application-owned screen collection with the provided list. This is the explicit MVP endpoint for managing screens under the application context.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApplicationScreensReplaceRequest'
+            examples:
+              replaceApplicationScreens:
+                $ref: '#/components/examples/ApplicationScreensReplaceRequest'
       responses:
         '200':
-          description: Screens retrieved successfully
+          description: Application screens replaced successfully
           content:
             application/json:
               schema:
@@ -326,39 +335,6 @@ paths:
               examples:
                 screens:
                   $ref: '#/components/examples/ScreenListResponse'
-        '404':
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExecutionErrorResponse'
-              examples:
-                applicationNotFound:
-                  $ref: '#/components/examples/ApplicationNotFoundError'
-    post:
-      tags: [Screens]
-      operationId: createScreen
-      summary: Create a screen inside an application
-      description: Registers one auditable URL. Screens are managed explicitly in the MVP and are not discovered automatically.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ScreenCreateRequest'
-            examples:
-              registerCheckoutScreen:
-                $ref: '#/components/examples/ScreenCreateRequest'
-      responses:
-        '201':
-          description: Screen created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ScreenResponse'
-              examples:
-                createdScreen:
-                  $ref: '#/components/examples/ScreenResponse'
         '400':
           description: Request validation failed
           content:
@@ -366,8 +342,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationErrorResponse'
               examples:
-                invalidScreen:
-                  $ref: '#/components/examples/ScreenCreateValidationError'
+                invalidScreens:
+                  $ref: '#/components/examples/ApplicationScreensValidationError'
         '404':
           description: Resource not found
           content:
@@ -385,84 +361,7 @@ paths:
                 $ref: '#/components/schemas/ExecutionErrorResponse'
               examples:
                 screenStoreUnavailable:
-                  $ref: '#/components/examples/ScreenPersistenceError'
-
-  /screens/{screenId}:
-    parameters:
-      - $ref: '#/components/parameters/ScreenId'
-    get:
-      tags: [Screens]
-      operationId: getScreen
-      summary: Get a screen by ID
-      responses:
-        '200':
-          description: Screen retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ScreenResponse'
-              examples:
-                screen:
-                  $ref: '#/components/examples/ScreenResponse'
-        '404':
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExecutionErrorResponse'
-              examples:
-                screenNotFound:
-                  $ref: '#/components/examples/ScreenNotFoundError'
-    patch:
-      tags: [Screens]
-      operationId: updateScreen
-      summary: Update a screen
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ScreenUpdateRequest'
-            examples:
-              renameCheckoutStep:
-                $ref: '#/components/examples/ScreenUpdateRequest'
-      responses:
-        '200':
-          description: Screen updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ScreenResponse'
-              examples:
-                updatedScreen:
-                  $ref: '#/components/examples/ScreenUpdatedResponse'
-        '400':
-          description: Request validation failed
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-              examples:
-                invalidScreenUpdate:
-                  $ref: '#/components/examples/ScreenUpdateValidationError'
-        '404':
-          description: Resource not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExecutionErrorResponse'
-              examples:
-                screenNotFound:
-                  $ref: '#/components/examples/ScreenNotFoundError'
-        '500':
-          description: Request failed due to an execution error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ExecutionErrorResponse'
-              examples:
-                screenStoreUnavailable:
-                  $ref: '#/components/examples/ScreenPersistenceError'
+                  $ref: '#/components/examples/ApplicationScreensPersistenceError'
 
   /applications/{applicationId}/reports:
     parameters:
@@ -829,13 +728,6 @@ components:
       schema:
         type: string
         format: uuid
-    ScreenId:
-      name: screenId
-      in: path
-      required: true
-      schema:
-        type: string
-        format: uuid
     ReportId:
       name: reportId
       in: path
@@ -939,12 +831,29 @@ components:
           levels:
             - A
             - AA
+        screens:
+          - name: Home
+            url: https://shop.acme.test/
+          - name: Checkout
+            url: https://shop.acme.test/checkout
     ApplicationUpdateRequest:
       summary: Update application request
       value:
         width: 1366
         height: 768
         waitTimeMs: 2200
+    ApplicationScreensReplaceRequest:
+      summary: Replace application screens request
+      value:
+        screens:
+          - id: ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+            name: Home
+            url: https://shop.acme.test/
+          - id: 8246317d-6758-4f6a-9957-695ed30a9e13
+            name: Checkout - Shipping
+            url: https://shop.acme.test/checkout
+          - name: Order Confirmation
+            url: https://shop.acme.test/order/confirmation
     ApplicationResponse:
       summary: Application response
       value:
@@ -962,6 +871,19 @@ components:
             levels:
               - A
               - AA
+          screens:
+            - id: ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+              applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
+              name: Home
+              url: https://shop.acme.test/
+              createdAt: '2026-04-02T10:10:00Z'
+              updatedAt: '2026-04-02T10:10:00Z'
+            - id: 8246317d-6758-4f6a-9957-695ed30a9e13
+              applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
+              name: Checkout
+              url: https://shop.acme.test/checkout
+              createdAt: '2026-04-02T10:15:00Z'
+              updatedAt: '2026-04-02T10:15:00Z'
           createdAt: '2026-04-02T10:05:00Z'
           updatedAt: '2026-04-02T10:05:00Z'
     ApplicationUpdatedResponse:
@@ -981,6 +903,19 @@ components:
             levels:
               - A
               - AA
+          screens:
+            - id: ffefdc94-7fb9-4cb2-bf1f-553499f6cf4f
+              applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
+              name: Home
+              url: https://shop.acme.test/
+              createdAt: '2026-04-02T10:10:00Z'
+              updatedAt: '2026-04-02T10:10:00Z'
+            - id: 8246317d-6758-4f6a-9957-695ed30a9e13
+              applicationId: 48d52f4f-37da-4786-8b79-172d4f2d358b
+              name: Checkout - Shipping
+              url: https://shop.acme.test/checkout
+              createdAt: '2026-04-02T10:15:00Z'
+              updatedAt: '2026-04-03T09:00:00Z'
           createdAt: '2026-04-02T10:05:00Z'
           updatedAt: '2026-04-03T08:55:00Z'
     ApplicationListResponse:
@@ -1400,40 +1335,23 @@ components:
           type: execution_error
           code: application_store_unavailable
           message: The application settings could not be saved because the configuration store is temporarily unavailable.
-    ScreenCreateValidationError:
-      summary: Invalid create-screen request
+    ApplicationScreensValidationError:
+      summary: Invalid replace-application-screens request
       value:
         error:
           type: validation_error
           code: invalid_request
           message: One or more request fields are invalid.
           details:
-            - field: url
+            - field: screens[1].url
               issue: must be a valid URI
-    ScreenUpdateValidationError:
-      summary: Invalid update-screen request
-      value:
-        error:
-          type: validation_error
-          code: invalid_request
-          message: One or more request fields are invalid.
-          details:
-            - field: name
-              issue: must not be empty
-    ScreenNotFoundError:
-      summary: Screen not found
-      value:
-        error:
-          type: execution_error
-          code: resource_not_found
-          message: Screen 0d4b2baf-406b-4afe-8e1c-d96d7c9d2814 was not found.
-    ScreenPersistenceError:
-      summary: Screen persistence failure
+    ApplicationScreensPersistenceError:
+      summary: Application screen persistence failure
       value:
         error:
           type: execution_error
           code: screen_store_unavailable
-          message: The screen could not be saved because the configuration store is temporarily unavailable.
+          message: The application screen collection could not be saved because the configuration store is temporarily unavailable.
     ReportCreateValidationError:
       summary: Invalid create-report request
       value:
@@ -1669,6 +1587,11 @@ components:
           minimum: 0
         accessibilityTarget:
           $ref: '#/components/schemas/AccessibilityTarget'
+        screens:
+          type: array
+          description: Current screen collection owned by the application.
+          items:
+            $ref: '#/components/schemas/Screen'
         createdAt:
           type: string
           format: date-time
@@ -1700,6 +1623,10 @@ components:
           minimum: 0
         accessibilityTarget:
           $ref: '#/components/schemas/AccessibilityTarget'
+        screens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreenWrite'
     ApplicationUpdateRequest:
       type: object
       minProperties: 1
@@ -1719,6 +1646,19 @@ components:
           minimum: 0
         accessibilityTarget:
           $ref: '#/components/schemas/AccessibilityTarget'
+        screens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreenWrite'
+    ApplicationScreensReplaceRequest:
+      type: object
+      required:
+        - screens
+      properties:
+        screens:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScreenWrite'
     ApplicationResponse:
       type: object
       required: [data]
@@ -1761,6 +1701,21 @@ components:
         updatedAt:
           type: string
           format: date-time
+    ScreenWrite:
+      type: object
+      required:
+        - name
+        - url
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Optional existing screen identifier when replacing the collection.
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
     ScreenCreateRequest:
       type: object
       required:
