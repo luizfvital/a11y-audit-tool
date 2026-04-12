@@ -1,13 +1,14 @@
 {
   "name": "a11y-audit-platform",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
     "dev:api": "npm run dev --workspace @a11y-audit-platform/api",
-    "start:api": "npm run start --workspace @a11y-audit-platform/api"
+    "start:api": "npm run start --workspace @a11y-audit-platform/api",
+    "test:api": "npm run test --workspace @a11y-audit-platform/api"
   }
 }
-

@@ -11,6 +11,7 @@ servers:
   - url: http://localhost:3000
     description: Local development server
 tags:
+  - name: Operational
   - name: Projects
   - name: Applications
   - name: Reports
@@ -18,6 +19,22 @@ tags:
   - name: Findings
   - name: Guidelines
 paths:
+  /health:
+    get:
+      tags: [Operational]
+      operationId: getHealth
+      summary: Get API health
+      description: Returns a lightweight liveness response for infrastructure and uptime checks.
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              examples:
+                health:
+                  $ref: '#/components/examples/HealthResponse'
   /projects:
     get:
       tags: [Projects]
@@ -776,6 +793,10 @@ components:
           schema:
             $ref: '#/components/schemas/ExecutionErrorResponse'
   examples:
+    HealthResponse:
+      summary: Health response
+      value:
+        status: ok
     ProjectCreateRequest:
       summary: Create project request
       value:
@@ -1417,6 +1438,15 @@ components:
           code: resource_not_found
           message: Guideline d7a76c2b-7ed7-4fb9-a7d6-668b11e1a4fb was not found.
   schemas:
+    HealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - ok
     ErrorKind:
       type: string
       description: Distinguishes validation failures from execution/runtime failures.
