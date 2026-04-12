@@ -95,34 +95,6 @@ The file contains placeholders for:
 - optional credentials
 - persistence configuration
 
-## Run the API with Docker
-
-This repository includes a minimal Docker setup for the current API service.
-
-Build the image from the repository root:
-
-```bash
-docker build -t a11y-audit-platform-api .
-```
-
-Run the container and publish the API port locally:
-
-```bash
-docker run --rm --name a11y-audit-platform-api -p 3000:3000 --env-file .env.example a11y-audit-platform-api
-```
-
-Once the container is running, the current API endpoints are available at:
-
-- health check: `http://localhost:3000/health`
-- Swagger UI: `http://localhost:3000/docs`
-- raw OpenAPI document: `http://localhost:3000/openapi.yaml`
-
-Stop the container with `Ctrl+C`, or from another terminal run:
-
-```bash
-docker stop a11y-audit-platform-api
-```
-
 ## Working Agreement
 
 This repository is organized to keep responsibilities separated:
