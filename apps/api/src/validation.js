@@ -139,6 +139,97 @@ function validateScreens(screens, fieldName = "screens") {
   return details;
 }
 
+function validateSelectedScreenIds(selectedScreenIds, fieldName = "selectedScreenIds") {
+  const details = [];
+
+  if (!Array.isArray(selectedScreenIds)) {
+    details.push({
+      field: fieldName,
+      issue: "must be an array"
+    });
+    return details;
+  }
+
+  if (selectedScreenIds.length === 0) {
+    details.push({
+      field: fieldName,
+      issue: "must include at least one screen id"
+    });
+    return details;
+  }
+
+  selectedScreenIds.forEach((screenId, index) => {
+    if (!isUuid(screenId)) {
+      details.push({
+        field: `${fieldName}[${index}]`,
+        issue: "must be a valid UUID"
+      });
+    }
+  });
+
+  return details;
+}
+
+function validateAuthentication(authentication, { required }) {
+  const details = [];
+
+  if (authentication === undefined) {
+    if (required) {
+      details.push({
+        field: "authentication.loginUrl",
+        issue: "is required when authenticationEnabled is true"
+      });
+      details.push({
+        field: "authentication.username",
+        issue: "is required when authenticationEnabled is true"
+      });
+    }
+
+    return details;
+  }
+
+  if (!isPlainObject(authentication)) {
+    details.push({
+      field: "authentication",
+      issue: "must be an object"
+    });
+    return details;
+  }
+
+  if (required && authentication.loginUrl === undefined) {
+    details.push({
+      field: "authentication.loginUrl",
+      issue: "is required when authenticationEnabled is true"
+    });
+  } else if (authentication.loginUrl !== undefined && !isValidUri(authentication.loginUrl)) {
+    details.push({
+      field: "authentication.loginUrl",
+      issue: "must be a valid URI"
+    });
+  }
+
+  if (required && authentication.username === undefined) {
+    details.push({
+      field: "authentication.username",
+      issue: "is required when authenticationEnabled is true"
+    });
+  } else if (authentication.username !== undefined && !isNonEmptyString(authentication.username)) {
+    details.push({
+      field: "authentication.username",
+      issue: "must not be empty"
+    });
+  }
+
+  if (authentication.password !== undefined && !isNonEmptyString(authentication.password)) {
+    details.push({
+      field: "authentication.password",
+      issue: "must not be empty"
+    });
+  }
+
+  return details;
+}
+
 function validateBodyHasAllowedFields(body, allowedFields, issue) {
   if (!isPlainObject(body)) {
     return [
@@ -353,4 +444,86 @@ export function validateApplicationScreensReplace(body) {
   }
 
   return validateScreens(body.screens);
+}
+
+export function validateReportCreate(body) {
+  const details = [];
+
+  if (!isPlainObject(body)) {
+    return [
+      {
+        field: "body",
+        issue: "must be an object"
+      }
+    ];
+  }
+
+  if (!isNonEmptyString(body.name)) {
+    details.push({
+      field: "name",
+      issue: "must not be empty"
+    });
+  }
+
+  if (typeof body.authenticationEnabled !== "boolean") {
+    details.push({
+      field: "authenticationEnabled",
+      issue: "must be a boolean"
+    });
+  }
+
+  details.push(...validateSelectedScreenIds(body.selectedScreenIds));
+
+  const requiresAuthentication = body.authenticationEnabled === true;
+  details.push(...validateAuthentication(body.authentication, { required: requiresAuthentication }));
+
+  return details;
+}
+
+export function validateReportUpdate(body, existingReport) {
+  const details = validateBodyHasAllowedFields(
+    body,
+    ["name", "authenticationEnabled", "authentication", "selectedScreenIds"],
+    "must include at least one report field"
+  );
+
+  if (details.length > 0 || !isPlainObject(body)) {
+    return details;
+  }
+
+  if (body.name !== undefined && !isNonEmptyString(body.name)) {
+    details.push({
+      field: "name",
+      issue: "must not be empty"
+    });
+  }
+
+  if (body.authenticationEnabled !== undefined && typeof body.authenticationEnabled !== "boolean") {
+    details.push({
+      field: "authenticationEnabled",
+      issue: "must be a boolean"
+    });
+  }
+
+  if (body.selectedScreenIds !== undefined) {
+    details.push(...validateSelectedScreenIds(body.selectedScreenIds));
+  }
+
+  const effectiveAuthenticationEnabled =
+    body.authenticationEnabled ?? existingReport?.authenticationEnabled ?? false;
+
+  if (effectiveAuthenticationEnabled) {
+    const effectiveAuthentication = body.authentication === undefined
+      ? existingReport?.authentication
+      : {
+          ...(existingReport?.authentication ?? {}),
+          ...body.authentication
+        };
+
+    details.push(...validateAuthentication(effectiveAuthentication, { required: true }));
+  } else if (body.authentication !== undefined) {
+    details.push(...validateAuthentication(body.authentication, { required: false }));
+  }
+
+  return details;
 }

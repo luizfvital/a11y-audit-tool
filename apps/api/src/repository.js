@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { GUIDELINES } from "./guidelines.js";
 
 function createTimestamp() {
   return new Date().toISOString();
@@ -12,6 +13,16 @@ export function createInMemoryRepository() {
   const projects = new Map();
   const applications = new Map();
   const screens = new Map();
+  const reports = new Map();
+  const reportRuns = new Map();
+  const findings = new Map();
+  const guidelines = new Map(GUIDELINES.map((guideline) => [guideline.id, clone(guideline)]));
+  const allowedReportRunTransitions = new Map([
+    ["pending", new Set(["running"])],
+    ["running", new Set(["completed", "failed"])],
+    ["completed", new Set()],
+    ["failed", new Set()]
+  ]);
 
   function listProjectScreens(applicationId) {
     return Array.from(screens.values())
@@ -29,8 +40,67 @@ export function createInMemoryRepository() {
     return result;
   }
 
+  function sanitizeReport(report) {
+    const result = clone(report);
+
+    if (!result.authenticationEnabled || !result.authentication) {
+      delete result.authentication;
+      return result;
+    }
+
+    const sanitizedAuthentication = {};
+
+    if (result.authentication.loginUrl !== undefined) {
+      sanitizedAuthentication.loginUrl = result.authentication.loginUrl;
+    }
+
+    if (result.authentication.username !== undefined) {
+      sanitizedAuthentication.username = result.authentication.username;
+    }
+
+    if (Object.keys(sanitizedAuthentication).length > 0) {
+      result.authentication = sanitizedAuthentication;
+    } else {
+      delete result.authentication;
+    }
+
+    return result;
+  }
+
   function ensureApplicationExists(applicationId) {
     return applications.get(applicationId) ?? null;
+  }
+
+  function updateReportRun(reportRunId, updater) {
+    const reportRun = reportRuns.get(reportRunId);
+
+    if (!reportRun) {
+      return null;
+    }
+
+    const nextReportRun = updater(reportRun);
+    reportRuns.set(reportRunId, nextReportRun);
+
+    return clone(nextReportRun);
+  }
+
+  function transitionReportRun(reportRunId, nextStatus, extraFields = {}) {
+    const reportRun = reportRuns.get(reportRunId);
+
+    if (!reportRun) {
+      return null;
+    }
+
+    if (!allowedReportRunTransitions.get(reportRun.status).has(nextStatus)) {
+      throw new Error(`Invalid report run transition from ${reportRun.status} to ${nextStatus}.`);
+    }
+
+    return updateReportRun(reportRunId, (currentReportRun) => ({
+      ...currentReportRun,
+      ...extraFields,
+      status: nextStatus,
+      updatedAt: createTimestamp()
+    }));
   }
 
   function createScreenRecord(applicationId, screenInput, now) {
@@ -223,6 +293,181 @@ export function createInMemoryRepository() {
 
     getScreenById(screenId) {
       return screens.has(screenId) ? clone(screens.get(screenId)) : null;
+    },
+
+    listReportsByApplication(applicationId) {
+      return Array.from(reports.values())
+        .filter((report) => report.applicationId === applicationId)
+        .map(sanitizeReport);
+    },
+
+    createReport(applicationId, input) {
+      const now = createTimestamp();
+      const report = {
+        id: randomUUID(),
+        applicationId,
+        name: input.name,
+        authenticationEnabled: input.authenticationEnabled,
+        selectedScreenIds: clone(input.selectedScreenIds),
+        createdAt: now,
+        updatedAt: now
+      };
+
+      if (input.authenticationEnabled && input.authentication) {
+        report.authentication = clone(input.authentication);
+      }
+
+      reports.set(report.id, report);
+
+      return sanitizeReport(report);
+    },
+
+    getReportById(reportId) {
+      const report = reports.get(reportId);
+
+      if (!report) {
+        return null;
+      }
+
+      return sanitizeReport(report);
+    },
+
+    updateReport(reportId, changes) {
+      const report = reports.get(reportId);
+
+      if (!report) {
+        return null;
+      }
+
+      const nextReport = {
+        ...report,
+        updatedAt: createTimestamp()
+      };
+
+      if (changes.name !== undefined) {
+        nextReport.name = changes.name;
+      }
+
+      if (changes.selectedScreenIds !== undefined) {
+        nextReport.selectedScreenIds = clone(changes.selectedScreenIds);
+      }
+
+      if (changes.authenticationEnabled !== undefined) {
+        nextReport.authenticationEnabled = changes.authenticationEnabled;
+      }
+
+      if (changes.authentication !== undefined) {
+        nextReport.authentication = {
+          ...(nextReport.authentication ?? {}),
+          ...clone(changes.authentication)
+        };
+      }
+
+      if (!nextReport.authenticationEnabled) {
+        delete nextReport.authentication;
+      }
+
+      reports.set(reportId, nextReport);
+
+      return sanitizeReport(nextReport);
+    },
+
+    listReportRunsByReport(reportId) {
+      return Array.from(reportRuns.values())
+        .filter((reportRun) => reportRun.reportId === reportId)
+        .map(clone);
+    },
+
+    createReportRun(reportId, screensPlanned) {
+      const now = createTimestamp();
+      const reportRun = {
+        id: randomUUID(),
+        reportId,
+        status: "pending",
+        startedAt: null,
+        finishedAt: null,
+        errorMessage: null,
+        summary: {
+          totalFindings: 0,
+          screensScanned: 0,
+          screensPlanned,
+          findingsByImpact: {}
+        },
+        createdAt: now,
+        updatedAt: now
+      };
+
+      reportRuns.set(reportRun.id, reportRun);
+
+      return clone(reportRun);
+    },
+
+    getReportRunById(reportRunId) {
+      return reportRuns.has(reportRunId) ? clone(reportRuns.get(reportRunId)) : null;
+    },
+
+    startReportRun(reportRunId) {
+      return transitionReportRun(reportRunId, "running", {
+        startedAt: createTimestamp()
+      });
+    },
+
+    updateReportRunSummary(reportRunId, summaryChanges) {
+      return updateReportRun(reportRunId, (reportRun) => ({
+        ...reportRun,
+        summary: {
+          ...reportRun.summary,
+          ...clone(summaryChanges)
+        },
+        updatedAt: createTimestamp()
+      }));
+    },
+
+    completeReportRun(reportRunId) {
+      return transitionReportRun(reportRunId, "completed", {
+        finishedAt: createTimestamp()
+      });
+    },
+
+    failReportRun(reportRunId, errorMessage) {
+      return transitionReportRun(reportRunId, "failed", {
+        errorMessage,
+        finishedAt: createTimestamp()
+      });
+    },
+
+    createFindings(findingInputs) {
+      const now = createTimestamp();
+
+      return findingInputs.map((findingInput) => {
+        const finding = {
+          id: randomUUID(),
+          ...clone(findingInput),
+          createdAt: now
+        };
+
+        findings.set(finding.id, finding);
+
+        return clone(finding);
+      });
+    },
+
+    listFindingsByReportRun(reportRunId) {
+      return Array.from(findings.values())
+        .filter((finding) => finding.reportRunId === reportRunId)
+        .map(clone);
+    },
+
+    getFindingById(findingId) {
+      return findings.has(findingId) ? clone(findings.get(findingId)) : null;
+    },
+
+    listGuidelines() {
+      return Array.from(guidelines.values()).map(clone);
+    },
+
+    getGuidelineById(guidelineId) {
+      return guidelines.has(guidelineId) ? clone(guidelines.get(guidelineId)) : null;
     }
   };
 }

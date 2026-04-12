@@ -37,8 +37,14 @@ The main artifacts available today are:
 
 - [`openapi.yaml`](openapi.yaml): API contract with request/response examples
 - [`docs/mvp-spec.md`](docs/mvp-spec.md): canonical MVP scope, architecture, domain model, lifecycle, and execution flow
-- [`apps/api`](apps/api): Express API with health, project, application, and screen-management endpoints
+- [`apps/api`](apps/api): Express API with health, project, application, report, report-run, finding, and guideline endpoints
 - [`tests/api`](tests/api): automated coverage for the implemented API slice
+
+Current implementation note:
+
+- report execution now runs in-process with Playwright and `@axe-core/playwright`
+- this first runner slice is fixture-only and supports reserved local fixture URLs, not arbitrary application URLs yet
+- authentication configuration is stored on reports, but authenticated scanning is still deferred
 
 ## Domain Overview
 
@@ -90,6 +96,10 @@ Run the implemented API and tests with:
 - `npm run dev:api`
 - `npm run start:api`
 - `npm run test:api`
+
+If Playwright browsers are not installed yet, run:
+
+- `npx playwright install chromium`
 
 ## Working Agreement
 
