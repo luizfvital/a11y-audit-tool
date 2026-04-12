@@ -3,9 +3,8 @@
 Backend-first monorepo for an accessibility audit platform built around:
 
 - a Node API
-- a background worker for audit execution
-- Playwright + axe-core scanning
-- a shared OpenAPI contract and domain models
+- an OpenAPI contract
+- an incremental MVP build approach
 
 ## Repository Structure
 
@@ -14,12 +13,12 @@ The repository follows the MVP specification described in [`docs/mvp-spec.md`](d
 ```text
 apps/
   api/         HTTP API and OpenAPI exposure
-  worker/      background execution and orchestration
+  worker/      placeholder for future background execution
 
 packages/
-  audit-engine/  Playwright + axe-core execution logic
-  contracts/     shared API schemas and domain contracts
-  shared/        shared utilities and common code
+  audit-engine/  placeholder for future Playwright + axe-core execution logic
+  contracts/     placeholder for future shared API/domain contracts
+  shared/        placeholder for future shared utilities
 
 tests/
   api/         API-focused validation tests
@@ -28,7 +27,6 @@ tests/
 docs/          project specifications and working agreements
 postman/       API exploration and manual test collections
 openapi.yaml   source API contract
-.env.example   local environment template
 ```
 
 ## Current Status
@@ -39,6 +37,8 @@ The main artifacts available today are:
 
 - [`openapi.yaml`](openapi.yaml): API contract with request/response examples
 - [`docs/mvp-spec.md`](docs/mvp-spec.md): canonical MVP scope, architecture, domain model, lifecycle, and execution flow
+- [`apps/api`](apps/api): Express API with health, project, application, and screen-management endpoints
+- [`tests/api`](tests/api): automated coverage for the implemented API slice
 
 ## Domain Overview
 
@@ -56,7 +56,7 @@ Typical flow:
 
 1. Create a project
 2. Create an application inside the project
-3. Register screens
+3. Manage application screens
 4. Create a report selecting screens
 5. Trigger a report run
 6. Retrieve run status and findings
@@ -83,26 +83,22 @@ Useful starting points:
 
 To visualize the API quickly, load [`openapi.yaml`](openapi.yaml) into Swagger Editor or Redoc.
 
-## Local Configuration
+## Local Usage
 
-Use [`.env.example`](.env.example) as the starting point for local environment setup.
+Run the implemented API and tests with:
 
-The file contains placeholders for:
-
-- API runtime settings
-- worker execution settings
-- Playwright configuration
-- optional credentials
-- persistence configuration
+- `npm run dev:api`
+- `npm run start:api`
+- `npm run test:api`
 
 ## Working Agreement
 
 This repository is organized to keep responsibilities separated:
 
 - `apps/api` owns HTTP and API behavior
-- `apps/worker` owns asynchronous execution
-- `packages/audit-engine` owns scan execution logic
-- `packages/contracts` owns shared contract definitions
+- `apps/worker` is reserved for future asynchronous execution
+- `packages/audit-engine` is reserved for future scan execution logic
+- `packages/contracts` is reserved for future shared contract definitions
 - `tests` owns validation coverage
 
 That split is intentional so the project can scale without collapsing API, execution, and shared domain code into one package.
