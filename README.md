@@ -46,6 +46,29 @@ Current implementation note:
 - this first runner slice is fixture-only and supports reserved local fixture URLs, not arbitrary application URLs yet
 - authentication configuration is stored on reports, but authenticated scanning is still deferred
 
+Current MVP snapshot:
+
+- implemented API resources: projects, applications, screens, reports, report runs, findings, and guidelines
+- implemented execution model: in-process sequential runner inside `apps/api`
+- implemented scan target support: reserved fixture URLs only
+- implemented findings model: normalized findings linked to report runs, screens, and guideline records
+- not implemented yet: authenticated scanning, arbitrary real-world URL execution, worker extraction, PostgreSQL persistence, and advanced reporting
+
+Supported fixture URLs:
+
+- `http://fixtures.a11y.local/basic-violations`
+  - happy-path fixture
+  - produces mapped accessibility findings and should complete the run
+- `http://fixtures.a11y.local/unmapped-rule`
+  - failure-path fixture
+  - produces an unmapped axe rule and should fail the run
+
+Next recommended slice:
+
+- expand the runner from fixture-only execution to controlled real URL execution
+- introduce a clear execution boundary so the runner can later move from `apps/api` into `apps/worker`
+- keep the current API contract stable while improving runtime capabilities
+
 ## Domain Overview
 
 The MVP backend supports these core resources:
@@ -80,6 +103,12 @@ This keeps the contract explicit about WCAG version and supported conformance le
 ## API Contract
 
 The API is documented in [`openapi.yaml`](openapi.yaml).
+
+Practical rule for future sessions:
+
+- [`README.md`](README.md): current status and how to run or test the project
+- [`docs/mvp-spec.md`](docs/mvp-spec.md): product scope, architecture, and next-step direction
+- [`openapi.yaml`](openapi.yaml): exact API contract, payload shapes, and response behavior
 
 Useful starting points:
 
